@@ -2,7 +2,7 @@ import re
 import html
 from typing import List, Dict, Any, Optional
 
-# pip install pyspellchecker pymorphy2 pandas
+# pip install pyspellchecker pymorphy3 pandas
 from spellchecker import SpellChecker
 import pymorphy3
 import pandas as pd
@@ -78,6 +78,36 @@ def lemmatize_sentence(sentence: str) -> List[str]:
     return lemmas
 
 
+def replace_punctuation_with_tokens(text: str) -> str:
+    def repl_ellipsis(match: re.Match) -> str:
+        dots = match.group(0)
+        n = len(dots)
+        return " " + ("mark_ellipsis" if n == 3 else f"mark_ellipsis{n}") + " "
+
+    text = re.sub(r"\.{3,}", repl_ellipsis, text)
+
+    def repl_exclam(match: re.Match) -> str:
+        seq = match.group(0)
+        n = len(seq)
+        base = "mark_exclamation"
+        token = base if n == 1 else f"{base}{n}"
+        return " " + token + " "
+
+    text = re.sub(r"!+", repl_exclam, text)
+
+    def repl_question(match: re.Match) -> str:
+        seq = match.group(0)
+        n = len(seq)
+        base = "mark_question"
+        token = base if n == 1 else f"{base}{n}"
+        return " " + token + " "
+
+    text = re.sub(r"\?+", repl_question, text)
+
+    text = re.sub(r"\s+", " ", text).strip()
+    return text
+
+
 def preprocess_text(text: Optional[str]) -> Dict[str, Any]:
     """
     - очистка
@@ -89,15 +119,20 @@ def preprocess_text(text: Optional[str]) -> Dict[str, Any]:
     original = "" if text is None else str(text)
 
     cleaned = clean_text(original)
-    normalized = normalize_text(cleaned)
+
+    normalized_with_punct_tokens = replace_punctuation_with_tokens(cleaned)
+    normalized = normalize_text(normalized_with_punct_tokens)
 
     sentences = sentence_tokenize(normalized)
     lemmatized_sentences = [lemmatize_sentence(s) for s in sentences]
 
+    # return lemmatized_sentences
+    
     return {
         "original": original,
         "cleaned": cleaned,
         "normalized": normalized,
+        "normalized_with_punct_tokens": normalized_with_punct_tokens,
         "sentences": sentences,
         "lemmatized_sentences": lemmatized_sentences,
     }
@@ -112,5 +147,6 @@ if __name__ == "__main__":
     print("Оригинал:", processed["original"])
     print("После очистки:", processed["cleaned"])
     print("После нормализации:", processed["normalized"])
+    print("После замены пунктуации на токены:", processed["normalized_with_punct_tokens"])
     print("Предложения:", processed["sentences"])
     print("Лемматизация по предложениям:", processed["lemmatized_sentences"])
