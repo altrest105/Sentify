@@ -10,6 +10,8 @@ import pandas as pd
 spell = SpellChecker(language="ru")
 morph = pymorphy3.MorphAnalyzer()
 
+# Очистка текста
+# ============================
 
 def clean_text(text: Optional[str]) -> str:
     if text is None:
@@ -27,6 +29,42 @@ def clean_text(text: Optional[str]) -> str:
 
     return text
 
+# ============================
+# Замена пунктуации на токены
+# ============================
+
+def replace_punctuation_with_tokens(text: str) -> str:
+    def repl_ellipsis(match: re.Match) -> str:
+        dots = match.group(0)
+        n = len(dots)
+        return " " + ("mark_ellipsis" if n == 3 else f"mark_ellipsis{n}") + " "
+
+    text = re.sub(r"\.{3,}", repl_ellipsis, text)
+
+    def repl_exclam(match: re.Match) -> str:
+        seq = match.group(0)
+        n = len(seq)
+        base = "mark_exclamation"
+        token = base if n == 1 else f"{base}{n}"
+        return " " + token + " "
+
+    text = re.sub(r"!+", repl_exclam, text)
+
+    def repl_question(match: re.Match) -> str:
+        seq = match.group(0)
+        n = len(seq)
+        base = "mark_question"
+        token = base if n == 1 else f"{base}{n}"
+        return " " + token + " "
+
+    text = re.sub(r"\?+", repl_question, text)
+
+    text = re.sub(r"\s+", " ", text).strip()
+    return text
+
+# ============================
+# Нормализация текста
+# ============================
 
 def auto_correct_text(text: str) -> str:
     if spell is None:
@@ -58,6 +96,9 @@ def normalize_text(text: str) -> str:
     
     return text
 
+# ============================
+# Токенизация и лемматизация
+# ============================
 
 def sentence_tokenize(text: str) -> List[str]:
     sentences = re.split(r"(?<=[\.!?…])\s+", text)
@@ -77,42 +118,15 @@ def lemmatize_sentence(sentence: str) -> List[str]:
             lemmas.append(token)
     return lemmas
 
-
-def replace_punctuation_with_tokens(text: str) -> str:
-    def repl_ellipsis(match: re.Match) -> str:
-        dots = match.group(0)
-        n = len(dots)
-        return " " + ("mark_ellipsis" if n == 3 else f"mark_ellipsis{n}") + " "
-
-    text = re.sub(r"\.{3,}", repl_ellipsis, text)
-
-    def repl_exclam(match: re.Match) -> str:
-        seq = match.group(0)
-        n = len(seq)
-        base = "mark_exclamation"
-        token = base if n == 1 else f"{base}{n}"
-        return " " + token + " "
-
-    text = re.sub(r"!+", repl_exclam, text)
-
-    def repl_question(match: re.Match) -> str:
-        seq = match.group(0)
-        n = len(seq)
-        base = "mark_question"
-        token = base if n == 1 else f"{base}{n}"
-        return " " + token + " "
-
-    text = re.sub(r"\?+", repl_question, text)
-
-    text = re.sub(r"\s+", " ", text).strip()
-    return text
-
+# ============================
+# Основная функция пайплайна
+# ============================
 
 def preprocess_text(text: Optional[str]) -> Dict[str, Any]:
     """
     - очистка
+    - замена пунктуации на токены
     - нормализация 
-    - извлечение пунктуационных фич
     - токенизация на предложения
     - лемматизация
     """
