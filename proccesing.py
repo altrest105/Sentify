@@ -140,7 +140,7 @@ def preprocess_text(text: Optional[str], test = False) -> Dict[str, Any]:
     sentences = sentence_tokenize(normalized)
     lemmatized_sentences = [lemmatize_sentence(s) for s in sentences]
 
-    if test:
+    if not test:
         return lemmatized_sentences
     else:
         return {
