@@ -122,7 +122,7 @@ def lemmatize_sentence(sentence: str) -> List[str]:
 # Основная функция пайплайна
 # ============================
 
-def preprocess_text(text: Optional[str]) -> Dict[str, Any]:
+def preprocess_text(text: Optional[str], test = False) -> Dict[str, Any]:
     """
     - очистка
     - замена пунктуации на токены
@@ -140,22 +140,23 @@ def preprocess_text(text: Optional[str]) -> Dict[str, Any]:
     sentences = sentence_tokenize(normalized)
     lemmatized_sentences = [lemmatize_sentence(s) for s in sentences]
 
-    # return lemmatized_sentences
-    
-    return {
-        "original": original,
-        "cleaned": cleaned,
-        "normalized": normalized,
-        "normalized_with_punct_tokens": normalized_with_punct_tokens,
-        "sentences": sentences,
-        "lemmatized_sentences": lemmatized_sentences,
-    }
+    if test:
+        return lemmatized_sentences
+    else:
+        return {
+            "original": original,
+            "cleaned": cleaned,
+            "normalized": normalized,
+            "normalized_with_punct_tokens": normalized_with_punct_tokens,
+            "sentences": sentences,
+            "lemmatized_sentences": lemmatized_sentences,
+        }
 
 
 if __name__ == "__main__":
     sample_text = "Мне никогда не нравился ваш магазин. Однако, сегодня я не могу найти нужный товар... Почему так дорого?!"
 
-    processed = preprocess_text(sample_text)
+    processed = preprocess_text(sample_text, test=True)
 
     print("\n=== ТЕСТОВАЯ ЗАПИСЬ ===")
     print("Оригинал:", processed["original"])
