@@ -2,13 +2,19 @@ import re
 import html
 from typing import List, Dict, Any, Optional
 
-# pip install pyspellchecker pymorphy3 pandas
+# pip install pyspellchecker pymorphy3 pandas natasha
 from spellchecker import SpellChecker
 import pymorphy3
 import pandas as pd
+from natasha import Doc, NewsEmbedding, NewsNERTagger, Segmenter, MorphVocab
 
 spell = SpellChecker(language="ru")
 morph = pymorphy3.MorphAnalyzer()
+
+emb = NewsEmbedding()
+segmenter = Segmenter()
+morph_vocab = MorphVocab()
+ner_tagger = NewsNERTagger(emb)
 
 # Очистка текста
 # ============================
@@ -71,10 +77,14 @@ def auto_correct_text(text: str) -> str:
         return text
 
     tokens = re.findall(r"\w+|[^\w\s]", text, flags=re.UNICODE)
-    corrected_tokens: List[str] = []
+    corrected_tokens = []
 
     for tok in tokens:
         if re.match(r"^[а-яА-ЯёЁa-zA-Z]+$", tok):
+            if len(tok) <= 2:
+                corrected_tokens.append(tok)
+                continue
+
             corrected = spell.correction(tok)
             if corrected is None:
                 corrected = tok
@@ -119,6 +129,31 @@ def lemmatize_sentence(sentence: str) -> List[str]:
     return lemmas
 
 # ============================
+# NER
+# ============================
+
+def extract_named_entities(text: List[List[str]]) -> List[Dict[str, str]]:
+
+    text_for_ner = re.sub(r"\s+([,\.\?\!])", r"\1", text)
+
+    doc = Doc(text_for_ner)
+    doc.segment(segmenter)
+    doc.tag_ner(ner_tagger)
+
+    entities: List[Dict[str, str]] = []
+
+    for span in doc.spans:
+        span.normalize(morph_vocab)
+        entities.append(
+            {
+                "text": span.text,
+                "type": span.type,
+            }
+        )
+
+    return entities
+
+# ============================
 # Основная функция пайплайна
 # ============================
 
@@ -140,8 +175,10 @@ def preprocess_text(text: Optional[str], test = False) -> Dict[str, Any]:
     sentences = sentence_tokenize(normalized)
     lemmatized_sentences = [lemmatize_sentence(s) for s in sentences]
 
+    ner_entities = extract_named_entities(original)
+
     if not test:
-        return lemmatized_sentences
+        return lemmatized_sentences, ner_entities
     else:
         return {
             "original": original,
@@ -150,11 +187,12 @@ def preprocess_text(text: Optional[str], test = False) -> Dict[str, Any]:
             "normalized_with_punct_tokens": normalized_with_punct_tokens,
             "sentences": sentences,
             "lemmatized_sentences": lemmatized_sentences,
+            "ner_entities": ner_entities,
         }
 
 
 if __name__ == "__main__":
-    sample_text = "Мне никогда не нравился ваш магазин. Однако, сегодня я не могу найти нужный товар... Почему так дорого?!"
+    sample_text = "Мне никогда не нравился ваш магазин в Москве. Однако, сегодня я не могу найти нужный товар, хотя нашёл его в Ашане... Почему так дорого???!"
 
     processed = preprocess_text(sample_text, test=True)
 
@@ -165,3 +203,8 @@ if __name__ == "__main__":
     print("После замены пунктуации на токены:", processed["normalized_with_punct_tokens"])
     print("Предложения:", processed["sentences"])
     print("Лемматизация по предложениям:", processed["lemmatized_sentences"])
+    print("NER:", processed["ner_entities"])
+
+    # processed, ner = preprocess_text(sample_text)
+    # print(processed)
+    # print(ner)
