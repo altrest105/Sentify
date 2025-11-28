@@ -193,24 +193,3 @@ def preprocess_text(text: Optional[str], test = False) -> Dict[str, Any]:
             "lemmatized_sentences": lemmatized_sentences,
             "ner_entities": ner_entities,
         }
-
-
-if __name__ == "__main__":
-    sample_text = "Мне никогда не нравился ваш магазин в Москве. Однако, сегодня я не могу найти нужный товар, хотя нашёл его в Ашане... Почему так дорого???!"
-
-    # processed = preprocess_text(sample_text, test=True)
-
-    # print("\n=== ТЕСТОВАЯ ЗАПИСЬ ===")
-    # print("Оригинал:", processed["original"])
-    # print("После очистки:", processed["cleaned"])
-    # print("После нормализации:", processed["normalized"])
-    # print("После замены пунктуации на токены:", processed["normalized_with_punct_tokens"])
-    # print("Предложения:", processed["sentences"])
-    # print("Лемматизация по предложениям:", processed["lemmatized_sentences"])
-    # print("NER:", processed["ner_entities"])
-
-    processed = preprocess_text(sample_text)
-    
-    print(processed["original"])
-    print(processed["lemm_text"])
-    print(processed["ner"])
