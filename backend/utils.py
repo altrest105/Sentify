@@ -72,13 +72,14 @@ async def parse_csv(file_path):
     return content
 
 
-async def filter_file(file_path, column, value):
+async def filter_file(file_path, mood, sources):
     content = []
-    with open(file_path, 'r') as csvfile:
+    with (open(file_path, 'r') as csvfile):
         dict_reader = csv.DictReader(csvfile)
         for i in dict_reader:
-            if i[column] == value:
-                content.append(i)
+            if (len(mood) == 0 or i['label'] in mood) and \
+               (len(sources) == 0 or i['src'] in sources):
+                    content.append(i)
     return content
 
 
