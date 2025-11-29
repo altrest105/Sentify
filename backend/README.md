@@ -58,14 +58,14 @@ CSV файл
 
 ## Фильтрация файла
 
-URL - `/filter/<file_id>?filter_column=string&filter_value=string`
+URL - `/filter_file/<file_id>?filter_column=string&filter_value=string`
 
 Тип запроса - `GET`
 
 ### Входные данные
 
 `file_id` - id файла, получается в при запросе `/upload_file`
-`filter_column` - колонка по которой производится фильтрация. `label` или `source`
+`filter_column` - колонка по которой производится фильтрация. `label` или `src`
 
 ### Выходные данные
 
@@ -84,7 +84,7 @@ URL - `/filter/<file_id>?filter_column=string&filter_value=string`
 
 ## Удаление файла
 
-URL - `/clear/<file_id>`
+URL - `/delete_file/<file_id>`
 
 Тип запроса - `DELETE`
 

@@ -59,7 +59,7 @@ async def validate_headers(filename) -> Tuple[bool, bool]:
         return False, False
 
 
-def delete_file(file_path):
+async def delete_file_util(file_path):
     try:
         if os.path.exists(file_path):
             os.remove(file_path)
