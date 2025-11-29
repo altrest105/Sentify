@@ -3,7 +3,7 @@ from fastapi.responses import FileResponse
 import os
 import uuid
 
-from utils import validate_headers, validate_csv_file, delete_file_after_send, collect_statistics
+from utils import validate_headers, validate_csv_file, delete_file_after_send, collect_statistics, parse_csv
 
 app = FastAPI()
 UPLOAD_DIR = "uploads"
@@ -11,8 +11,7 @@ UPLOAD_DIR = "uploads"
 @app.post("/upload-file")
 async def upload_file(
         background_tasks: BackgroundTasks,
-        file: UploadFile = Form(...),
-        is_verification: bool = Form(...),
+        file: UploadFile = Form(...)
 ):
 
     try:
@@ -29,8 +28,8 @@ async def upload_file(
         with open(file_path, "wb") as buffer:
             content = await file.read()
             buffer.write(content)
-
-        if not validate_headers(file_path, is_verification):
+        validated, is_verification = await validate_headers(file_path)
+        if not validated:
             raise HTTPException(
                 status_code=400,
                 detail="CSV file contains wrong headers"
@@ -38,7 +37,7 @@ async def upload_file(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Ошибка при загрузке файла: {str(e)}")
 
-    # new_file = do_some_stuff(file_path, verification_file)
+    new_file_path = do_some_stuff(file_path, is_verification)
     response = FileResponse(
         path=file_path,
         filename="response.csv",
@@ -47,4 +46,4 @@ async def upload_file(
 
     background_tasks.add_task(delete_file_after_send, file_path)
 
-    return {"file": response, "statistic": collect_statistics(new_file)}
+    return {"file": response, "statistic": await collect_statistics(new_file_path), "content": await parse_csv(new_file_path)}

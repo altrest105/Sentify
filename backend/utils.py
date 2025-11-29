@@ -3,6 +3,7 @@ from fastapi import UploadFile
 import os
 import magic
 import csv
+from typing import Tuple
 
 
 UPLOAD_DIR = "uploads"
@@ -44,15 +45,15 @@ async def validate_csv_file(file: UploadFile) -> bool:
     return True
 
 
-async def validate_headers(filename, validation_file) -> bool:
+async def validate_headers(filename) -> Tuple[bool, bool]:
     with open(filename, 'r') as csvfile:
         reader = csv.reader(csvfile)
         headers = next(reader)
 
-        if validation_file and set(headers) == {"ID", "text", "label", "src"} or \
-           not validation_file and set(headers) == {"ID", "text", "src"}:
-            return True
-        return False
+        if set(headers) == {"ID", "text", "label", "src"} or \
+           set(headers) == {"ID", "text", "src"}:
+            return True, set(headers) == {"ID", "text", "label", "src"}
+        return False, False
 
 
 def delete_file_after_send(file_path):
@@ -61,3 +62,12 @@ def delete_file_after_send(file_path):
             os.remove(file_path)
     except Exception as e:
         print(f"Ошибка при удалении файла: {e}")
+
+
+async def parse_csv(file_path):
+    content = []
+    with open(file_path, 'r') as csvfile:
+        dict_reader = csv.DictReader(csvfile)
+        for i in dict_reader:
+            content.append(i)
+    return content
