@@ -1,5 +1,9 @@
 # Backend спецификация
 
+## Базовый URL
+
+`http://localhost:8000/`
+
 ## Для запуска
 
 ```commandline
