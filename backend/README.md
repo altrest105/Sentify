@@ -1,5 +1,11 @@
 # Backend спецификация
 
+## Для запуска
+
+```commandline
+docker-compose up --build
+```
+
 ## Загрузка файла на backend
 
 URL - `/upload_file`
@@ -26,9 +32,9 @@ Value: Файл загруженный пользователем
     "2": "int"
   },
   "content": {
-    "ID": "int",
+    "ID": "string",
     "text": "string",
-    "label": "int",
+    "label": "string",
     "source": "string"
   }
 }
