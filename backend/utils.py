@@ -1,4 +1,3 @@
-from collections import Counter
 from fastapi import UploadFile
 import os
 import magic
@@ -6,7 +5,7 @@ import csv
 from typing import Tuple
 
 
-UPLOAD_DIR = "uploads"
+UPLOAD_DIR = "files"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 ALLOWED_CSV_MIME_TYPES = [
@@ -18,11 +17,15 @@ ALLOWED_CSV_MIME_TYPES = [
 
 
 async def collect_statistics(filename: str) -> dict:
-    counter = Counter()
+    counter = {
+        "0": 0,
+        "1": 0,
+        "2": 0
+    }
     with open(filename, 'r') as csvfile:
         dict_reader = csv.DictReader(csvfile)
         for i in dict_reader:
-            counter[i["label"]] += 1
+            counter[int(i["label"])] += 1
     return dict(counter)
 
 
@@ -69,5 +72,7 @@ async def parse_csv(file_path):
     with open(file_path, 'r') as csvfile:
         dict_reader = csv.DictReader(csvfile)
         for i in dict_reader:
+            i["ID"] = int(i["ID"])
+            i["label"] = int(i["label"])
             content.append(i)
     return content
