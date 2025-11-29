@@ -4,77 +4,45 @@ from lightgbm import LGBMClassifier
 from sklearn.model_selection import StratifiedKFold
 from sklearn.metrics import f1_score, classification_report
 from sklearn.feature_extraction.text import TfidfVectorizer
-from pymystem3 import Mystem
 from tqdm import tqdm
 
-# ПРЕДОБРАБОТКА ТЕКСТА
-mystem = Mystem()
-
-def clean_text(text: str) -> str:
+# Предобработка текста
+def clean_text(text):
     text = str(text).lower()
     text = re.sub(r'http\S+', '<URL>', text)
     text = re.sub(r'\S+@\S+', '<EMAIL>', text)
     text = re.sub(r'\b\d{1,2}[./-]\d{1,2}[./-]\d{2,4}\b', '<DATE>', text)
     text = re.sub(r'\b\d+\b', '<NUM>', text)
-    text = re.sub(r'[^а-яёa-z0-9 ]+', ' ', text)
+    text = re.sub(
+        r'[^а-яёa-z0-9\s!?.,…\U0001F000-\U0001FFFF]+', 
+        ' ', 
+        text
+    )
     text = re.sub(r'\s+', ' ', text).strip()
+
     return text
 
-def lemmatize_texts_batch(texts, batch_size=1000):
-    res = []
-    sep = ' uniquebreaktoken '
-    sep_token = 'uniquebreaktoken'
-    chunks = [texts[i:i+batch_size] for i in range(0, len(texts), batch_size)]
-
-    for chunk in tqdm(chunks, desc="Lemmatizing texts"):
-        merged = sep.join(chunk)
-        lemmas = mystem.lemmatize(merged)
-
-        current_doc = []
-        chunk_res = []
-        for w in lemmas:
-            w = w.strip()
-            if not w or w == '\n':
-                continue
-            if w == sep_token:
-                chunk_res.append(' '.join(current_doc))
-                current_doc = []
-            else:
-                current_doc.append(w)
-        chunk_res.append(' '.join(current_doc))
-
-        # коррекция длины
-        if len(chunk_res) != len(chunk):
-            if len(chunk_res) > len(chunk):
-                chunk_res = chunk_res[:len(chunk)]
-            else:
-                chunk_res.extend([''] * (len(chunk) - len(chunk_res)))
-
-        res.extend(chunk_res)
-    return res
-
-def preprocess_texts(texts, batch_size=1000):
+def preprocess_texts(texts):
     cleaned_texts = [clean_text(t) for t in tqdm(texts, desc="Cleaning texts")]
-    lemmatized_texts = lemmatize_texts_batch(cleaned_texts, batch_size=batch_size)
-    return lemmatized_texts
+    return cleaned_texts
 
-# ЗАГРУЗКА ДАННЫХ
+# Загрузка данных
 df = pd.read_csv('files/train.csv')
 X_raw = df['text'].fillna('')
 y = df['label']
 
-# Предобработка с прогрессбаром
-X_text = preprocess_texts(X_raw, batch_size=1000)
+# Предобработка
+X_text = preprocess_texts(X_raw)
 
-# ВЕКТОРИЗАЦИЯ
+# Векторизация
 vectorizer = TfidfVectorizer(
-    max_features=10000,
-    ngram_range=(1, 2),
+    max_features=20000,
+    ngram_range=(1, 3),
 )
 X = vectorizer.fit_transform(X_text)
 
-# КРОСС-ВАЛИДАЦИЯ
-skf = StratifiedKFold(n_splits=3, shuffle=True, random_state=42)
+# Кросс-валидация
+skf = StratifiedKFold(n_splits=2, shuffle=True, random_state=42)
 f1_scores = []
 
 for fold, (train_idx, val_idx) in enumerate(skf.split(X, y), 1):
@@ -103,7 +71,7 @@ for fold, (train_idx, val_idx) in enumerate(skf.split(X, y), 1):
 
 print("\nMean F1-macro across folds:", sum(f1_scores)/len(f1_scores))
 
-# ОБУЧЕНИЕ НА ВСЕМ ДАТАСЕТЕ
+# Обучение
 final_model = LGBMClassifier(
     n_estimators=200,
     learning_rate=0.05,
@@ -118,12 +86,12 @@ final_model = LGBMClassifier(
 )
 final_model.fit(X, y)
 
-# ПРЕДСКАЗАНИЕ И ОЦЕНКА
+# Предсказание и оценка
 y_pred = final_model.predict(X)
 print("\nClassification Report on full dataset:\n")
 print(classification_report(y, y_pred))
 
-# СОХРАНЕНИЕ МОДЕЛИ И ВЕКТОРИЗАТОРА
+# Сохранение модели и векторизатора
 import joblib
 joblib.dump(final_model, 'lgbm_model.pkl')
 joblib.dump(vectorizer, 'tfidf_vectorizer.pkl')
