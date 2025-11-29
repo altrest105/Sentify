@@ -1,0 +1,18 @@
+html {
+    font-family: var(--font-family);
+    color: var(--text-primary);
+    font-weight: 400;
+}
+
+h1 {
+  font-size: 23px;
+}
+
+h2 {
+  font-size: 16px;
+}
+
+li {
+  font-size: 14px;
+  padding: 5px;
+}

@@ -1,0 +1,8 @@
+:root {
+    --text-primary: #5b422c;
+    --negative: rgba(255, 0, 0, 0.15);
+    --positive: rgba(74, 255, 0, 0.15);
+    --neutral: rgba(255, 198, 0, 0.15);
+
+    --font-family: "PT Serif", serif;
+}

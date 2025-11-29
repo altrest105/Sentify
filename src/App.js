@@ -1,23 +1,33 @@
-import logo from './logo.svg';
 import './App.css';
+import { useState } from 'react';
+import FileUpload from './components/FileUpload'
+import DownloadSection from './components/DownloadSection';
+import ReviewListPage from './components/ReviewListPage';
 
 function App() {
+  const [currentView, setCurrentView] = useState('upload');
+  const [fileData, setFileData] = useState(null);
+
+  const handleFileUploadSuccess = (data) => {
+    setFileData(data);
+    setCurrentView('list');
+  }
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      {currentView === 'upload' && (
+        <FileUpload onSuccess={handleFileUploadSuccess}/>
+      )}
+
+      {currentView === 'list' && fileData && (
+        <main>
+          <DownloadSection
+            fileId={fileData.file_id}
+            fileName="processed_reviews.csv"
+        />
+          <ReviewListPage data={fileData}/>
+        </main>
+      )}
     </div>
   );
 }

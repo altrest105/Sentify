@@ -1,0 +1,15 @@
+.fileLabel {
+  margin-top: 15px;
+  padding: 10px;
+  background-color: #efe3d2;
+  border-radius: 50px;
+  border: none;
+  cursor: pointer;
+  font-size: 23px;
+}
+
+.text {
+  color: #5b422c;
+  font-family: "PT Serif", serif;
+  font-weight: 400;
+}

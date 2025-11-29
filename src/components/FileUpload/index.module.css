@@ -1,0 +1,63 @@
+* {
+  box-sizing: border-box; /* применяем ко всем элементам */
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background-color: #f6f6f6;
+  border-radius: 10px;
+  padding: 40px;
+  gap: 20px;
+  height: 100%;
+  overflow: auto;
+}
+
+.text {
+  color: #5b422c;
+  font-family: "PT Serif", serif;
+  font-weight: 400;
+}
+
+h1 {
+  font-size: 23px;
+}
+
+h2 {
+  font-size: 16px;
+}
+
+li {
+  font-size: 14px;
+  padding: 5px;
+}
+
+.text-align__center {
+  text-align: center;
+}
+
+.semi-transparent {
+  opacity: 0.5;
+}
+
+.fileLabel {
+  margin-top: 15px;
+  padding: 10px;
+  background-color: #efe3d2;
+  border-radius: 50px;
+  border: none;
+  cursor: pointer;
+  font-size: 23px;
+}
+
+.fileInput {
+  display: none;
+}

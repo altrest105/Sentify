@@ -1,0 +1,150 @@
+* {
+  box-sizing: border-box; /* применяем ко всем элементам */
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+main {
+  display: grid;
+  grid-template-columns: 1fr 3fr;
+  padding: 30px;
+  gap: 30px;
+  height: 100vh;
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  background-color: #f6f6f6;
+  border-radius: 10px;
+  padding: 40px;
+  height: 100%;
+  overflow: hidden;
+}
+
+.left {
+  justify-content: center;
+}
+
+.text {
+  color: #5b422c;
+  font-family: "PT Serif", serif;
+  font-weight: 400;
+}
+
+h1 {
+  font-size: 23px;
+}
+
+h2 {
+  font-size: 16px;
+}
+
+.right h1 {
+  margin-bottom: 5px;
+}
+
+.right h2 {
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+li {
+  font-size: 14px;
+  padding: 5px;
+}
+
+.text-align__center {
+  text-align: center;
+}
+
+.semi-transparent {
+  opacity: 0.5;
+}
+
+.upload__button {
+  margin-top: 15px;
+  padding: 10px;
+  background-color: #efe3d2;
+  border-radius: 50px;
+  font-size: 23px;
+}
+
+.right {
+  justify-content: flex-start;
+}
+
+.button {
+  padding: 10px;
+  border: none;
+  cursor: pointer;
+  border-radius: 50px;
+}
+
+.nav {
+  display: flex;
+  justify-content: space-around;
+  background-color: #f6f1ea;
+  border-radius: 50px;
+  border: none;
+  padding: 10px;
+}
+
+.nav__button {
+  /* АКТИВНАЯ КНОПКА НАВИГАЦИИ*/
+  background-color: #efe3d2;
+  font-size: 16px;
+  padding: 5px 70px 5px 70px;
+}
+
+.search {
+  display: flex;
+  justify-content: space-between;
+  background-color: #f6f1ea;
+  padding: 5px 10px;
+  border-radius: 10px;
+  margin-top: 10px;
+}
+
+.filter {
+  display: flex;
+  align-self: flex-end;
+  justify-content: space-between;
+  width: 20%;
+  background-color: #f6f1ea;
+  padding: 5px 10px;
+  border-radius: 10px;
+  margin-top: 10px;
+  font-size: 16px;
+}
+
+.open {
+  width: 20px;
+}
+
+input {
+  border: none;
+  background-color: #f6f1ea;
+  font-size: 16px;
+  padding: 5px 0;
+}
+
+.responses {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  overflow: auto;
+  margin-top: 20px;
+}
+
+.response {
+  background-color: #f6f1ea;
+  height: 150px;
+  width: calc((100% - 80px) / 3);
+  border-radius: 10px;
+}
