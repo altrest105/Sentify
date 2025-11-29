@@ -35,14 +35,29 @@ y = df['label']
 X_text = preprocess_texts(X_raw)
 
 # Векторизация
+russian_stopwords = [
+    # местоимения
+    'я', 'ты', 'он', 'она', 'оно', 'мы', 'вы', 'они', 'себя', 'свою', 'свой', 'своё', 'свои', 'твой', 'твоя', 'твоё', 'твои',
+    # служебные слова
+    'и', 'в', 'во', 'на', 'к', 'ко', 'с', 'со', 'от', 'до', 'за', 'для', 'по', 'об', 'о', 'при', 'у', 'из', 'над', 'под', 'про', 'без', 'через',
+    # предлоги
+    'как', 'так', 'что', 'когда', 'где', 'чем', 'чтобы', 'ли', 'лишь', 'только', 'ещё', 'уже', 'вот', 'также',
+    # союзные слова, не влияющие на тон
+    'и', 'или', 'а', 'да', 'если', 'потому', 'так как', 'поскольку', 'чтобы', 'потом', 'тогда',
+    # частицы, не влияющие на смысл
+    'же', 'бы', 'ли', 'пусть', 'ну', 'вот', 'типа'
+]
+
+
 vectorizer = TfidfVectorizer(
-    max_features=20000,
+    max_features=25000,
     ngram_range=(1, 3),
+    stop_words=russian_stopwords
 )
 X = vectorizer.fit_transform(X_text)
 
 # Кросс-валидация
-skf = StratifiedKFold(n_splits=2, shuffle=True, random_state=42)
+skf = StratifiedKFold(n_splits=3, shuffle=True, random_state=42)
 f1_scores = []
 
 for fold, (train_idx, val_idx) in enumerate(skf.split(X, y), 1):
