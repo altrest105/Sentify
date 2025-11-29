@@ -4,6 +4,7 @@ import os
 import uuid
 
 from utils import validate_headers, validate_csv_file, delete_file_util, collect_statistics, parse_csv, filter_file
+from stariy_file import get_mood
 
 app = FastAPI()
 UPLOAD_DIR = "files"
@@ -28,7 +29,7 @@ async def upload_file(
         with open(file_path, "wb") as buffer:
             content = await file.read()
             buffer.write(content)
-        validated, is_verification = await validate_headers(file_path)
+        validated = await validate_headers(file_path)
         if not validated:
             raise HTTPException(
                 status_code=400,
@@ -37,11 +38,10 @@ async def upload_file(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error loading file: {str(e)}")
 
-    new_file_path = file_path
 
-    # new_file_path = do_some_stuff(file_path, is_verification)
-    #
-    # await delete_file_util(file_path)
+    new_file_path = await get_mood(file_path)
+
+    await delete_file_util(file_path)
 
     file_info[file_id] = new_file_path
 
