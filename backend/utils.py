@@ -2,7 +2,7 @@ from fastapi import UploadFile
 import os
 import magic
 import csv
-from typing import Tuple
+import pandas as pd
 
 
 UPLOAD_DIR = "files"
@@ -48,15 +48,12 @@ async def validate_csv_file(file: UploadFile) -> bool:
     return True
 
 
-async def validate_headers(filename) -> Tuple[bool, bool]:
-    with open(filename, 'r') as csvfile:
+async def validate_headers(filename) -> bool:
+    with open(filename, 'r', encoding='utf-8-sig') as csvfile:
         reader = csv.reader(csvfile)
         headers = next(reader)
-
-        if set(headers) == {"ID", "text", "label", "src"} or \
-           set(headers) == {"ID", "text", "src"}:
-            return True, set(headers) == {"ID", "text", "label", "src"}
-        return False, False
+        print(headers)
+        return set(headers) == {"ID", "text", "src"}
 
 
 async def delete_file_util(file_path):
@@ -84,3 +81,24 @@ async def filter_file(file_path, column, value):
             if i[column] == value:
                 content.append(i)
     return content
+
+
+async def prepare_data(file_path):
+    df = pd.read_csv(file_path)
+    df_transposed = df.T
+    transposed_array = df_transposed.values.tolist()
+    headers = df_transposed.index.tolist()
+
+    return headers, transposed_array
+
+
+def create_csv(headers, data_arrays, output_file='response.csv'):
+    file_path = os.path.join(UPLOAD_DIR, output_file)
+    data_dict = {}
+    for header, data_array in zip(headers, data_arrays):
+        data_dict[header] = data_array
+
+    df = pd.DataFrame(data_dict)
+    df.to_csv(file_path, index=False, encoding='utf-8')
+
+    return file_path
