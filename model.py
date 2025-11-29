@@ -1,9 +1,8 @@
 import re
 import pandas as pd
-import joblib
 from lightgbm import LGBMClassifier
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import accuracy_score, classification_report
+from sklearn.model_selection import StratifiedKFold
+from sklearn.metrics import f1_score, classification_report
 from sklearn.feature_extraction.text import TfidfVectorizer
 from pymystem3 import Mystem
 from tqdm import tqdm
@@ -21,22 +20,13 @@ def clean_text(text: str) -> str:
     text = re.sub(r'\s+', ' ', text).strip()
     return text
 
-# ЛЕММАТИЗАЦИЯ В ПАКЕТАХ
 def lemmatize_texts_batch(texts, batch_size=1000):
-    """
-    texts: список строк
-    batch_size: сколько текстов объединять для одной лемматизации
-    """
     res = []
-    # Используем уникальный токен, который вряд ли встретится в тексте
     sep = ' uniquebreaktoken '
     sep_token = 'uniquebreaktoken'
-    
-    # разбиваем на чанки
     chunks = [texts[i:i+batch_size] for i in range(0, len(texts), batch_size)]
 
     for chunk in tqdm(chunks, desc="Lemmatizing texts"):
-        # объединяем тексты в одну строку
         merged = sep.join(chunk)
         lemmas = mystem.lemmatize(merged)
 
@@ -51,25 +41,20 @@ def lemmatize_texts_batch(texts, batch_size=1000):
                 current_doc = []
             else:
                 current_doc.append(w)
-
-        # добавляем последний документ в чанке
         chunk_res.append(' '.join(current_doc))
-        
-        # Аварийная коррекция длины, чтобы не падал train_test_split
+
+        # коррекция длины
         if len(chunk_res) != len(chunk):
             if len(chunk_res) > len(chunk):
                 chunk_res = chunk_res[:len(chunk)]
             else:
                 chunk_res.extend([''] * (len(chunk) - len(chunk_res)))
-        
+
         res.extend(chunk_res)
-        
     return res
 
 def preprocess_texts(texts, batch_size=1000):
-    # сначала очистка
     cleaned_texts = [clean_text(t) for t in tqdm(texts, desc="Cleaning texts")]
-    # потом пакетная лемматизация
     lemmatized_texts = lemmatize_texts_batch(cleaned_texts, batch_size=batch_size)
     return lemmatized_texts
 
@@ -78,34 +63,68 @@ df = pd.read_csv('files/train.csv')
 X_raw = df['text'].fillna('')
 y = df['label']
 
-# ПРЕДОБРАБОТКА С ПРОГРЕССБАРОМ
+# Предобработка с прогрессбаром
 X_text = preprocess_texts(X_raw, batch_size=1000)
 
 # ВЕКТОРИЗАЦИЯ
-vectorizer = TfidfVectorizer(max_features=1000)
+vectorizer = TfidfVectorizer(
+    max_features=10000,
+    ngram_range=(1, 2),
+)
 X = vectorizer.fit_transform(X_text)
 
-# TRAIN / TEST SPLIT
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+# КРОСС-ВАЛИДАЦИЯ
+skf = StratifiedKFold(n_splits=3, shuffle=True, random_state=42)
+f1_scores = []
 
-# ОБУЧЕНИЕ МОДЕЛИ
-model = LGBMClassifier(
-    n_estimators=100,
-    learning_rate=0.1,
-    num_leaves=31,
-    random_state=42
+for fold, (train_idx, val_idx) in enumerate(skf.split(X, y), 1):
+    print(f"\n=== FOLD {fold} ===")
+    X_train, X_val = X[train_idx], X[val_idx]
+    y_train, y_val = y.iloc[train_idx], y.iloc[val_idx]
+
+    model = LGBMClassifier(
+        n_estimators=200,
+        learning_rate=0.05,
+        num_leaves=63,
+        random_state=42,
+        class_weight='balanced',
+
+        device='gpu',
+        gpu_platform_id=0,
+        gpu_device_id=0,
+        max_bin=255
+    )
+
+    model.fit(X_train, y_train)
+    preds = model.predict(X_val)
+    f1 = f1_score(y_val, preds, average='macro')
+    print(f"F1-macro: {f1:.4f}")
+    f1_scores.append(f1)
+
+print("\nMean F1-macro across folds:", sum(f1_scores)/len(f1_scores))
+
+# ОБУЧЕНИЕ НА ВСЕМ ДАТАСЕТЕ
+final_model = LGBMClassifier(
+    n_estimators=200,
+    learning_rate=0.05,
+    num_leaves=63,
+    random_state=42,
+    class_weight='balanced',
+
+    device='gpu',
+    gpu_platform_id=0,
+    gpu_device_id=0,
+    max_bin=255
 )
-
-model.fit(X_train, y_train)
+final_model.fit(X, y)
 
 # ПРЕДСКАЗАНИЕ И ОЦЕНКА
-y_pred = model.predict(X_test)
-y_pred_proba = model.predict_proba(X_test)
-
-print("Accuracy:", accuracy_score(y_test, y_pred))
-print("\nClassification Report:\n", classification_report(y_test, y_pred))
+y_pred = final_model.predict(X)
+print("\nClassification Report on full dataset:\n")
+print(classification_report(y, y_pred))
 
 # СОХРАНЕНИЕ МОДЕЛИ И ВЕКТОРИЗАТОРА
-joblib.dump(model, 'lgbm_model.pkl')
+import joblib
+joblib.dump(final_model, 'lgbm_model.pkl')
 joblib.dump(vectorizer, 'tfidf_vectorizer.pkl')
-print("Модель и векторизатор сохранены в файлы 'lgbm_model.pkl' и 'tfidf_vectorizer.pkl'")
+print("Модель и векторизатор сохранены.")
