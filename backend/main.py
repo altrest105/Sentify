@@ -1,7 +1,8 @@
-from fastapi import FastAPI, UploadFile, HTTPException, Form, status
+from fastapi import FastAPI, UploadFile, HTTPException, Form, Query, status
 from fastapi.responses import FileResponse
 import os
 import uuid
+from typing import List
 
 from utils import validate_headers, validate_csv_file, delete_file_util, collect_statistics, parse_csv, filter_file, reformat_csv, sort_file, count_metric_util
 from stariy_file import get_mood
@@ -123,7 +124,7 @@ async def download_submission_file(file_id: str):
 
 
 @app.get("/filter_file/{file_id}")
-async def filter_func(file_id: str, filter_column: str, filter_value: str):
+async def filter_func(file_id: str, mood: List[int] = Query(...), sources: List[str] = Query(...)):
     file_path = file_info.get(file_id)
     if not file_path or not os.path.exists(file_path[0]):
         raise HTTPException(
@@ -131,13 +132,13 @@ async def filter_func(file_id: str, filter_column: str, filter_value: str):
             detail="File doesn't exists"
         )
 
-    if not filter_column in {'label', 'src'}:
+    if set(mood) & {'1', '2', '3'} != len(mood) or len(mood) + len(sources) < 1:
         raise HTTPException(
             status_code=400,
-            detail="Wrong column to filter"
+            detail="Not enough parameters or not existing mood type"
         )
 
-    return await filter_file(file_path[0], filter_column, filter_value)
+    return await filter_file(file_path[0], mood, sources)
 
 
 @app.delete("/delete_file/{file_id}", status_code=status.HTTP_204_NO_CONTENT)

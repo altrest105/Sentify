@@ -103,15 +103,19 @@ CSV файл
 
 ## Фильтрация файла
 
-URL - `/filter_file/<file_id>?filter_column=string&filter_value=string`
+URL - `/filter_file/<file_id>?mood=string&...&mood=string&sources=string&...&sources=string`
 
 Тип запроса - `GET`
+
+### Пример запроса
+
+`http://loacalhost:8000/filter_file/file_id?mood=1&mood=2&sources=perekrestok&sources=geo`
 
 ### Входные данные
 
 `file_id` - id файла, получается в при запросе `/upload_file`
-`filter_column` - колонка по которой производится фильтрация. `label` или `src`
-`filter_value` - значение по которому производится фильтрация
+`mood` - настроение отзыва
+`sources` - источники отзыва
 
 ### Выходные данные
 
