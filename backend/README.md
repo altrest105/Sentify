@@ -170,7 +170,7 @@ URL - `/count_metric?file_id=string&submission_file_id=string`
 ### Входные данные
 
 `file_id` - id файла, получается в при запросе `/upload_file`
-`submission_file_id` - id submission файла, получается в при запросе `/upload_file`
+`submission_file_id` - id submission файла, получается в при запросе `/upload_submission_file`
 
 ### Выходные данные
 

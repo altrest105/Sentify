@@ -81,10 +81,9 @@ async def upload_submission_file(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error loading file: {str(e)}")
 
-    file_id = [file_path]
+    file_info[file_id] = [file_path]
 
     return {"file_id": file_id}
-
 
 
 @app.get("/download_file/{file_id}/response_file")
@@ -108,7 +107,7 @@ async def download_file(file_id: str):
 @app.get("/download_file/{file_id}/submission_file")
 async def download_submission_file(file_id: str):
     file_path = file_info.get(file_id)
-    if not file_path or len(file_path) != 2 or not os.path.exists(file_path) :
+    if not file_path or len(file_path) != 2 or not os.path.exists(file_path[1]) :
         raise HTTPException(
             status_code=404,
             detail="File doesn't exists"
@@ -138,7 +137,7 @@ async def filter_func(file_id: str, filter_column: str, filter_value: str):
             detail="Wrong column to filter"
         )
 
-    return filter_file(file_path[0], filter_column, filter_value)
+    return await filter_file(file_path[0], filter_column, filter_value)
 
 
 @app.delete("/delete_file/{file_id}", status_code=status.HTTP_204_NO_CONTENT)
@@ -152,7 +151,7 @@ async def delete_file(file_id: str):
 
     await delete_file_util(file_path[0])
 
-    if os.path.exists(file_path[1]):
+    if len(file_path) == 2 and os.path.exists(file_path[1]):
         await delete_file_util(file_path[1])
     return None
 
@@ -172,7 +171,7 @@ async def sort_func(file_id: str, sort_column: str, desc: bool=False):
             detail="Wrong column to filter"
         )
 
-    return sort_file(file_path, sort_column, desc)
+    return await sort_file(file_path[0], sort_column, desc)
 
 
 @app.get("/count_metric")
@@ -186,6 +185,6 @@ async def count_metric(file_id: str, submission_file_id: str):
             detail="File doesn't exists"
         )
 
-    metric = count_metric_util(file_path, submission_file_path)
+    metric = await count_metric_util(file_path, submission_file_path)
 
     return {"metric": metric}
