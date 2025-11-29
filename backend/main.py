@@ -1,9 +1,9 @@
-from fastapi import FastAPI, UploadFile, HTTPException, BackgroundTasks, Form
+from fastapi import FastAPI, UploadFile, HTTPException, Form, status
 from fastapi.responses import FileResponse
 import os
 import uuid
 
-from utils import validate_headers, validate_csv_file, delete_file_after_send, collect_statistics, parse_csv
+from utils import validate_headers, validate_csv_file, delete_file_util, collect_statistics, parse_csv, filter_file
 
 app = FastAPI()
 UPLOAD_DIR = "files"
@@ -11,7 +11,6 @@ file_info = {}
 
 @app.post("/upload_file")
 async def upload_file(
-        background_tasks: BackgroundTasks,
         file: UploadFile = Form(...)
 ):
 
@@ -36,13 +35,13 @@ async def upload_file(
                 detail="CSV file contains wrong headers"
             )
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Ошибка при загрузке файла: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error loading file: {str(e)}")
 
     new_file_path = file_path
 
     # new_file_path = do_some_stuff(file_path, is_verification)
     #
-    # background_tasks.add_task(delete_file_after_send, file_path)
+    # await delete_file_util(file_path)
 
     file_info[file_id] = new_file_path
 
@@ -50,9 +49,9 @@ async def upload_file(
 
 
 @app.get("/download_file/{file_id}")
-async def download_file(file_id: str, background_tasks: BackgroundTasks):
+async def download_file(file_id: str):
     file_path = file_info.get(file_id)
-    if not file_path:
+    if not file_path or not os.path.exists(file_path):
         raise HTTPException(
             status_code=404,
             detail="File doesn't exists"
@@ -64,5 +63,35 @@ async def download_file(file_id: str, background_tasks: BackgroundTasks):
         media_type='application/octet-stream'
     )
 
-    background_tasks.add_task(delete_file_after_send, file_path)
     return response
+
+
+@app.get("/filter_file/{file_id}")
+async def filter_func(file_id: str, filter_column: str, filter_value: str):
+    file_path = file_info.get(file_id)
+    if not file_path or not os.path.exists(file_path):
+        raise HTTPException(
+            status_code=404,
+            detail="File doesn't exists"
+        )
+
+    if not filter_column in {'label', 'src'}:
+        raise HTTPException(
+            status_code=400,
+            detail="Wrong column to filter"
+        )
+
+    return filter_file(file_path, filter_column, filter_value)
+
+
+@app.delete("/delete_file/{file_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_file(file_id: str):
+    file_path = file_info.get(file_id)
+    if not file_path or not os.path.exists(file_path):
+        raise HTTPException(
+            status_code=404,
+            detail="File doesn't exists"
+        )
+
+    await delete_file_util(file_path)
+    return None

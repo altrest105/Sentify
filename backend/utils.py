@@ -43,7 +43,7 @@ async def validate_csv_file(file: UploadFile) -> bool:
         if mime_type not in ALLOWED_CSV_MIME_TYPES:
             return False
     except Exception as e:
-        print(f"Ошибка при проверке MIME-типа: {e}")
+        print(f"Error checking MIME-type: {e}")
         return False
     return True
 
@@ -59,12 +59,12 @@ async def validate_headers(filename) -> Tuple[bool, bool]:
         return False, False
 
 
-def delete_file_after_send(file_path):
+async def delete_file_util(file_path):
     try:
         if os.path.exists(file_path):
             os.remove(file_path)
     except Exception as e:
-        print(f"Ошибка при удалении файла: {e}")
+        print(f"Error deleting file: {e}")
 
 
 async def parse_csv(file_path):
@@ -73,4 +73,14 @@ async def parse_csv(file_path):
         dict_reader = csv.DictReader(csvfile)
         for i in dict_reader:
             content.append(i)
+    return content
+
+
+async def filter_file(file_path, column, value):
+    content = []
+    with open(file_path, 'r') as csvfile:
+        dict_reader = csv.DictReader(csvfile)
+        for i in dict_reader:
+            if i[column] == value:
+                content.append(i)
     return content
