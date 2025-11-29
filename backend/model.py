@@ -9,8 +9,6 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from utils import prepare_data, create_csv
 
 CROSS_VALIDATE = False
-TEST = True
-TRAIN = True
 
 MAX_FEATURES = 40000
 NGRAM_RANGE = (1, 3)
