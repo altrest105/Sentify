@@ -1,20 +1,30 @@
 import re
+import os
+import joblib
 import pandas as pd
 from lightgbm import LGBMClassifier
 from sklearn.model_selection import StratifiedKFold
 from sklearn.metrics import f1_score
 from sklearn.feature_extraction.text import TfidfVectorizer
-from tqdm import tqdm
-import joblib
+from utils import prepare_data, create_csv
 
 CROSS_VALIDATE = False
 TEST = True
 TRAIN = True
 
+MAX_FEATURES = 40000
+NGRAM_RANGE = (1, 3)
+N_SPLITS = 3
+
+N_ESTIMATORS = 400
+LR = 0.07
+N_LEAVES = 63
+
+
 # Предобработка текста
 def preprocess_texts(texts):
     cleaned_texts = []
-    for t in tqdm(texts, desc="Cleaning texts"):
+    for t in texts:
         text = str(t).lower()
         text = re.sub(r'http\S+', '<URL>', text)
         text = re.sub(r'\S+@\S+', '<EMAIL>', text)
@@ -43,14 +53,14 @@ def load_and_preprocess_data():
 # Векторизация
 def create_vectorizer():
     vectorizer = TfidfVectorizer(
-        max_features=40000,
-        ngram_range=(1, 3),
+        max_features=MAX_FEATURES,
+        ngram_range=NGRAM_RANGE,
     )
     return vectorizer
 
 # Кросс-валидация
 def cross_validate_model(X, y):
-    skf = StratifiedKFold(n_splits=3, shuffle=True, random_state=42)
+    skf = StratifiedKFold(n_splits=N_SPLITS, shuffle=True, random_state=42)
     f1_scores = []
 
     for fold, (train_idx, val_idx) in enumerate(skf.split(X, y), 1):
@@ -59,9 +69,9 @@ def cross_validate_model(X, y):
         y_train, y_val = y.iloc[train_idx], y.iloc[val_idx]
 
         model = LGBMClassifier(
-            n_estimators=400,
-            learning_rate=0.05,
-            num_leaves=63,
+            n_estimators=N_ESTIMATORS,
+            learning_rate=LR,
+            num_leaves=N_LEAVES,
             random_state=42,
             class_weight='balanced',
 
@@ -82,9 +92,9 @@ def cross_validate_model(X, y):
 # Обучение
 def train_final_model(X, y):
     final_model = LGBMClassifier(
-        n_estimators=400,
-        learning_rate=0.05,
-        num_leaves=63,
+        n_estimators=N_ESTIMATORS,
+        learning_rate=LR,
+        num_leaves=N_LEAVES,
         random_state=42,
         class_weight='balanced',
 
@@ -98,39 +108,37 @@ def train_final_model(X, y):
 
 # Сохранение модели и векторизатора
 def save_model_and_vectorizer(model, vectorizer):
-    joblib.dump(model, 'lgbm_model.pkl')
-    joblib.dump(vectorizer, 'tfidf_vectorizer.pkl')
+    joblib.dump(model, 'files/lgbm_model.pkl')
+    joblib.dump(vectorizer, 'files/tfidf_vectorizer.pkl')
     print("Модель и векторизатор сохранены.")
 
 # Загрузка модели и векторизатора
 def load_model_and_vectorizer():
-    model = joblib.load('lgbm_model.pkl')
-    vectorizer = joblib.load('tfidf_vectorizer.pkl')
+    model = joblib.load('files/lgbm_model.pkl')
+    vectorizer = joblib.load('files/tfidf_vectorizer.pkl')
     return model, vectorizer
 
-
-if __name__ == "__main__":
-    if TRAIN == True:
+# Получение тональности
+def get_mood(file_path):
+    # Проверяем, есть ли обученная модель
+    if not(os.path.exists('files/lgbm_model.pkl')) or not(os.path.exists('files/tfidf_vectorizer.pkl')):
         X_text, y = load_and_preprocess_data()
         vectorizer = create_vectorizer()
         X = vectorizer.fit_transform(X_text)
 
-        if CROSS_VALIDATE == True:
+        if CROSS_VALIDATE:
             cross_validate_model(X, y)
 
-        final_model = train_final_model(X, y)
+        model = train_final_model(X, y)
+        save_model_and_vectorizer(model, vectorizer)
+    
+    model, vectorizer = load_model_and_vectorizer()
 
-        save_model_and_vectorizer(final_model, vectorizer)
+    headers, columns = prepare_data(file_path)
+    preprocessed_texts = preprocess_texts(columns[headers.index("text")])
 
+    X_new = vectorizer.transform(preprocessed_texts)
+    preds = model.predict(X_new)
 
-    if TEST == True:
-        new_texts = pd.read_csv('files/test.csv')['text'].fillna('')
-        ids = pd.read_csv('files/test.csv')['ID']
-        src = pd.read_csv('files/test.csv')['src'].fillna('')
-
-        cleaned_texts = preprocess_texts(new_texts)
-        model, vectorizer = load_model_and_vectorizer()
-        X_new = vectorizer.transform(cleaned_texts)
-        labels = model.predict(X_new)
-
-        pd.DataFrame({'id': ids, 'text': new_texts, 'src': src, 'label': labels}).to_csv('submission.csv', index=False)
+    file_path = create_csv(['ID', 'text', 'src', 'label'], columns + [preds])
+    return file_path

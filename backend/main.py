@@ -4,7 +4,7 @@ import os
 import uuid
 
 from utils import validate_headers, validate_csv_file, delete_file_util, collect_statistics, parse_csv, filter_file, reformat_csv, sort_file, count_metric_util
-from stariy_file import get_mood
+from model import get_mood
 
 app = FastAPI()
 UPLOAD_DIR = "files"
@@ -40,7 +40,7 @@ async def upload_file(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error loading file: {str(e)}")
 
-    new_file_path = await get_mood(file_path)
+    new_file_path = get_mood(file_path)
     new_submission_file_path = os.path.join(UPLOAD_DIR, f"{file_id}_submission.csv")
     await reformat_csv(new_file_path, new_submission_file_path)
 
