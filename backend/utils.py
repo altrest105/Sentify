@@ -48,12 +48,11 @@ async def validate_csv_file(file: UploadFile) -> bool:
     return True
 
 
-async def validate_headers(filename) -> bool:
+async def validate_headers(filename, headers_to_check) -> bool:
     with open(filename, 'r', encoding='utf-8-sig') as csvfile:
         reader = csv.reader(csvfile)
         headers = next(reader)
-        print(headers)
-        return set(headers) == {"ID", "text", "src"}
+        return set(headers) == headers_to_check
 
 
 async def delete_file_util(file_path):
@@ -102,3 +101,25 @@ def create_csv(headers, data_arrays, output_file='response.csv'):
     df.to_csv(file_path, index=False, encoding='utf-8')
 
     return file_path
+
+
+async def reformat_csv(file_path, output_path):
+    try:
+        df = pd.read_csv(file_path, encoding='utf-8-sig')
+        df.columns = df.columns.str.replace('\ufeff', '')
+        filtered_df = df[['ID', 'label']]
+
+        filtered_df.to_csv(output_path, index=False, encoding='utf-8')
+
+    except Exception as e:
+        print(f"Error while processing file: {e}")
+
+
+async def sort_file(file_path, column, desc):
+    content = await parse_csv(file_path)
+    content.sort(key=lambda x: x[column], reverse=desc)
+    return content
+
+
+async def count_metric_util(file_path, submission_file_path):
+    return 1
