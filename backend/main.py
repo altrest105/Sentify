@@ -186,6 +186,6 @@ async def count_metric(file_id: str, submission_file_id: str):
             detail="File doesn't exists"
         )
 
-    metric = await count_metric_util(file_path, submission_file_path)
+    metric = await count_metric_util(file_path[1], submission_file_path[0])
 
     return {"metric": metric}

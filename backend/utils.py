@@ -3,6 +3,7 @@ import os
 import magic
 import csv
 import pandas as pd
+from sklearn.metrics import f1_score
 
 
 UPLOAD_DIR = "files"
@@ -83,7 +84,7 @@ async def filter_file(file_path, mood, sources):
     return content
 
 
-async def prepare_data(file_path):
+def prepare_data(file_path):
     df = pd.read_csv(file_path)
     df_transposed = df.T
     transposed_array = df_transposed.values.tolist()
@@ -123,4 +124,12 @@ async def sort_file(file_path, column, desc):
 
 
 async def count_metric_util(file_path, submission_file_path):
-    return 1
+    df1 = pd.read_csv(file_path)
+    df2 = pd.read_csv(submission_file_path)
+    df1 = df1.rename(columns={'label': 'label1'})
+    df2 = df2.rename(columns={'label': 'label2'})
+    merged_df = pd.merge(df1, df2, on='ID', how='inner')
+    labels1 = merged_df['label1'].tolist()
+    labels2 = merged_df['label2'].tolist()
+
+    return f1_score(labels2, labels1, average='macro')
