@@ -21,7 +21,7 @@ async def collect_statistics(filename: str) -> dict:
     with open(filename, 'r') as csvfile:
         dict_reader = csv.DictReader(csvfile)
         for i in dict_reader:
-            counter[dict_reader["label"]] += 1
+            counter[i["label"]] += 1
     return dict(counter)
 
 
@@ -49,8 +49,8 @@ async def validate_headers(filename, validation_file) -> bool:
         reader = csv.reader(csvfile)
         headers = next(reader)
 
-        if validation_file and set(headers) == {"text", "label", "src"} or \
-           not validation_file and set(headers) == {"text", "src"}:
+        if validation_file and set(headers) == {"ID", "text", "label", "src"} or \
+           not validation_file and set(headers) == {"ID", "text", "src"}:
             return True
         return False
 

@@ -1,4 +1,4 @@
-from fastapi import FastAPI, UploadFile, HTTPException, BackgroundTasks
+from fastapi import FastAPI, UploadFile, HTTPException, BackgroundTasks, Form
 from fastapi.responses import FileResponse
 import os
 import uuid
@@ -8,13 +8,13 @@ from utils import validate_headers, validate_csv_file, delete_file_after_send, c
 app = FastAPI()
 UPLOAD_DIR = "uploads"
 
-
-@app.post("/upload-file/")
+@app.post("/upload-file")
 async def upload_file(
         background_tasks: BackgroundTasks,
-        file: UploadFile,
-        verification_file: bool
+        file: UploadFile = Form(...),
+        is_verification: bool = Form(...),
 ):
+
     try:
         if not await validate_csv_file(file):
             raise HTTPException(
@@ -26,7 +26,11 @@ async def upload_file(
 
         file_path = os.path.join(UPLOAD_DIR, f"{file_id}_{file.filename}")
 
-        if not validate_headers(file_path, verification_file):
+        with open(file_path, "wb") as buffer:
+            content = await file.read()
+            buffer.write(content)
+
+        if not validate_headers(file_path, is_verification):
             raise HTTPException(
                 status_code=400,
                 detail="CSV file contains wrong headers"
@@ -34,10 +38,9 @@ async def upload_file(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Ошибка при загрузке файла: {str(e)}")
 
-    new_file = do_some_stuff(file_path, verification_file)
-
+    # new_file = do_some_stuff(file_path, verification_file)
     response = FileResponse(
-        path=new_file,
+        path=file_path,
         filename="response.csv",
         media_type='application/octet-stream'
     )
