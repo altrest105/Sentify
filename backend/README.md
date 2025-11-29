@@ -31,18 +31,20 @@ Value: Файл загруженный пользователем
     "1": "int",
     "2": "int"
   },
-  "content": {
-    "ID": "string",
-    "text": "string",
-    "label": "string",
-    "source": "string"
-  }
+  "content": [
+    {
+      "ID": "string",
+      "text": "string",
+      "label": "string",
+      "source": "string"
+    }
+  ]
 }
 ```
 
 ## Получение файла с backend
 
-URL - `/download_file/{file_id}`
+URL - `/download_file/<file_id>`
 
 Тип запроса - `GET`
 
@@ -53,3 +55,39 @@ URL - `/download_file/{file_id}`
 ### Выходные данные
 
 CSV файл
+
+## Фильтрация файла
+
+URL - `/filter_file/<file_id>?filter_column=string&filter_value=string`
+
+Тип запроса - `GET`
+
+### Входные данные
+
+`file_id` - id файла, получается в при запросе `/upload_file`
+`filter_column` - колонка по которой производится фильтрация. `label` или `src`
+
+### Выходные данные
+
+```json
+{
+  "content": [
+    {
+      "ID": "string",
+      "text": "string",
+      "label": "string",
+      "source": "string"
+    }
+  ]
+}
+```
+
+## Удаление файла
+
+URL - `/delete_file/<file_id>`
+
+Тип запроса - `DELETE`
+
+### Входные данные
+
+`file_id` - id файла, получается в при запросе `/upload_file`
