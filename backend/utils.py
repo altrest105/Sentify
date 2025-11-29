@@ -25,7 +25,7 @@ async def collect_statistics(filename: str) -> dict:
     with open(filename, 'r') as csvfile:
         dict_reader = csv.DictReader(csvfile)
         for i in dict_reader:
-            counter[int(i["label"])] += 1
+            counter[i["label"]] += 1
     return dict(counter)
 
 
@@ -72,7 +72,5 @@ async def parse_csv(file_path):
     with open(file_path, 'r') as csvfile:
         dict_reader = csv.DictReader(csvfile)
         for i in dict_reader:
-            i["ID"] = int(i["ID"])
-            i["label"] = int(i["label"])
             content.append(i)
     return content

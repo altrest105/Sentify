@@ -38,9 +38,11 @@ async def upload_file(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Ошибка при загрузке файла: {str(e)}")
 
-    new_file_path = do_some_stuff(file_path, is_verification)
+    new_file_path = file_path
 
-    background_tasks.add_task(delete_file_after_send, file_path)
+    # new_file_path = do_some_stuff(file_path, is_verification)
+    #
+    # background_tasks.add_task(delete_file_after_send, file_path)
 
     file_info[file_id] = new_file_path
 
