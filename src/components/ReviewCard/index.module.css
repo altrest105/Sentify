@@ -1,4 +1,4 @@
- .responses {
+.responses {
   display: flex;
   flex-wrap: wrap;
   gap: 20px;
@@ -16,7 +16,7 @@
   font-size: 14px;
 }
 
-.response__0 {
+.response__2 {
   background-color: rgba(255, 0, 0, 0.15);
 }
 
@@ -24,7 +24,7 @@
   background-color: rgba(74, 255, 0, 0.15);
 }
 
-.response__2 {
+.response__0 {
   background-color: rgba(255, 198, 0, 0.15);
 }
 
@@ -47,7 +47,7 @@
   border-radius: 10px;
 }
 
-.label__0 {
+.label__2 {
   border: 2px solid #ff6467;
   color: #ff6467;
 }
@@ -57,17 +57,7 @@
   color: #7ef24e;
 }
 
-.label__2 {
+.label__0 {
   border: 2px solid #e3bd3d;
   color: #e3bd3d;
-}
-
-.text {
-  color: #5b422c;
-  font-family: "PT Serif", serif;
-  font-weight: 400;
-}
-
-.semi-transparent {
-  opacity: 0.5;
 }

@@ -1,0 +1,57 @@
+/* Navigation/index.module.css */
+
+.nav {
+  display: flex;
+  justify-content: space-around;
+  background-color: #f6f1ea;
+  border-radius: 50px;
+  border: none;
+  padding: 10px;
+}
+
+/* 1. Позиционирование для .underline */
+.navRelative {
+  position: relative;
+}
+
+/* 2. Скользящая подложка */
+.underline {
+  position: absolute;
+  top: 10px; /* 10px = padding родителя */
+  bottom: 10px; /* 10px = padding родителя */
+  transition: left 0.3s ease, width 0.3s ease; /* Анимация! */
+  z-index: 0; /* Под кнопками */
+  overflow: hidden;
+  border-radius: 50px;
+}
+
+/* 3. Фон самой подложки */
+.underlineBackground {
+  height: 100%;
+  width: 100%;
+  background-color: #efe3d2;
+  display: block;
+  border-radius: 50px;
+}
+
+/* 4. Общие стили кнопок */
+.button {
+  padding: 10px;
+  border: none;
+  cursor: pointer;
+  border-radius: 50px;
+}
+
+/* 5. Кнопка навигации */
+.navButton {
+  background-color: transparent; /* Важно: делаем фон прозрачным */
+  position: relative;
+  z-index: 1; /* Важно: над подложкой */
+  font-size: 16px;
+  padding: 5px 50px; /* Установите padding для определения ширины */
+}
+
+/* 6. (Опционально) Стиль текста для активной вкладки */
+.activeTab {
+  /* color: #5b422c; */
+}

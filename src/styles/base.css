@@ -1,7 +1,7 @@
 html {
-    font-family: var(--font-family);
-    color: var(--text-primary);
-    font-weight: 400;
+  font-family: var(--font-family);
+  color: var(--text-primary);
+  font-weight: 400;
 }
 
 h1 {
@@ -15,4 +15,22 @@ h2 {
 li {
   font-size: 14px;
   padding: 5px;
+}
+
+.semi-transparent {
+  opacity: 0.5;
+}
+
+.text-align__center {
+  text-align: center;
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  background-color: #f6f6f6;
+  border-radius: 10px;
+  padding: 40px;
+  height: 100%;
+  overflow: hidden;
 }

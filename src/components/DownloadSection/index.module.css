@@ -8,8 +8,8 @@
   font-size: 23px;
 }
 
-.text {
-  color: #5b422c;
-  font-family: "PT Serif", serif;
-  font-weight: 400;
+.left {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
