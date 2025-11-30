@@ -3,6 +3,7 @@ from fastapi.responses import FileResponse
 import os
 import uuid
 from typing import List
+from fastapi.middleware.cors import CORSMiddleware
 
 from utils import validate_headers, validate_csv_file, delete_file_util, collect_statistics, parse_csv, filter_file, reformat_csv, sort_file, count_metric_util
 from model import get_mood
@@ -10,6 +11,21 @@ from model import get_mood
 app = FastAPI()
 UPLOAD_DIR = "files"
 file_info = {}
+
+
+origins = [
+    "*"
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,         # Allows all origins
+    allow_credentials=True,        # Allows cookies/authorization headers to be included in cross-origin requests
+    allow_methods=["*"],           # Allows all HTTP methods (GET, POST, PUT, DELETE, etc.)
+    allow_headers=["*"],           # Allows all headers
+)
+
+
 
 @app.post("/upload_file")
 async def upload_file(
