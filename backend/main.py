@@ -169,7 +169,7 @@ async def sort_func(file_id: str, sort_column: str, desc: bool=False):
     if not sort_column in {'label', 'src'}:
         raise HTTPException(
             status_code=400,
-            detail="Wrong column to filter"
+            detail="Wrong column to filter."
         )
 
     return await sort_file(file_path[0], sort_column, desc)
