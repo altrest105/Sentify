@@ -59,7 +59,7 @@ const SentimentPieChart = ({ statistics }) => {
     const count = statistics[key];
     const percentage = (count / total) * 100;
     const color = SENTIMENT_COLORS[key] || "#cccccc";
-    const label = `${SENTIMENT_LABELS[key]} (${count}, ${percentage.toFixed(1)}%)`;
+    const label = `${SENTIMENT_LABELS[key]} (${count},   ${percentage.toFixed(1)}%)`;
 
     return { key, count, percentage, color, label };
   });
