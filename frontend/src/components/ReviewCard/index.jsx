@@ -1,6 +1,9 @@
+import { useState } from "react";
 import styles from "./index.module.css";
 
 function ReviewCard({ review }) {
+  const [isExpanded, setIsExpanded] = useState(false);
+
   if (!review) return <div>Отзыв отсутствует</div>;
 
   const getSentimentText = (label) => {
@@ -12,14 +15,20 @@ function ReviewCard({ review }) {
     return sentiments[label] || label;
   };
 
+  const toggleExpand = () => {
+    setIsExpanded(!isExpanded);
+  };
+
   return (
     <div
-      key={review.ID}
       className={`${styles.response} ${styles[`response__${review.label}`]}`}
+      onClick={toggleExpand}
     >
-      <p>{review.text}</p>
-      <p className={`semi-transparent  ${styles.source}`}>
-        <i>{review.source}</i>
+      <div className={`${styles.text} ${isExpanded ? styles.expanded : styles.collapsed}`}>
+        {review.text}
+      </div>
+      <p className={`semi-transparent ${styles.source}`}>
+        <i>{review.src}</i> {/* ✅ Исправлено с source на src */}
       </p>
       <div className={`${styles.label} ${styles[`label__${review.label}`]}`}>
         {getSentimentText(review.label)}

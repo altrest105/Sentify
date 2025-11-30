@@ -4,4 +4,22 @@ main {
   padding: 30px;
   gap: 30px;
   height: 100vh;
+  max-height: 100vh;
+}
+
+/* Стили для левой панели (DownloadSection) */
+.left-panel {
+  grid-column: 1;
+  height: 100%;
+  overflow: auto;
+}
+
+/* Стили для правой панели (ReviewListPage) */
+.right-panel {
+  grid-column: 2;
+  height: 100%;
+  overflow: auto;
+  border: 2px solid #f6f6f6;
+  border-radius: 10px;
+  padding: 20px;
 }

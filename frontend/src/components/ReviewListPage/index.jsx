@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import styles from "./index.module.css"; // Используется один раз
+import styles from "./index.module.css";
 import ReviewCard from "../ReviewCard";
 import ReviewTable from "../ReviewTable";
 import NavigationBar from "../Navigation/index.jsx";
@@ -25,9 +25,9 @@ const useDebounce = (value, delay) => {
 // ⭐️ Настройки для диаграммы тональности
 // ===============================================
 const SENTIMENT_COLORS = {
-  1: "rgba(74, 255, 0, 0.3)", // Положительный (Green/Lime - 0.15 opacity)
-  0: "rgba(255, 198, 0, 0.3)", // Нейтральный (Yellow/Amber - 0.15 opacity)
-  2: "rgba(255, 0, 0, 0.3)", // Негативный (Red - 0.15 opacity)
+  1: "rgba(74, 255, 0, 0.3)",
+  0: "rgba(255, 198, 0, 0.3)",
+  2: "rgba(255, 0, 0, 0.3)",
 };
 
 const SENTIMENT_LABELS = {
@@ -38,7 +38,6 @@ const SENTIMENT_LABELS = {
 
 // ===============================================
 // ⭐️ Вложенный компонент для круговой диаграммы тональности (SentimentPieChart)
-// Использует стили из index.module.css
 // ===============================================
 const SentimentPieChart = ({ statistics }) => {
   if (!statistics) return null;
@@ -60,14 +59,11 @@ const SentimentPieChart = ({ statistics }) => {
     const count = statistics[key];
     const percentage = (count / total) * 100;
     const color = SENTIMENT_COLORS[key] || "#cccccc";
-    const label = `${SENTIMENT_LABELS[key]} (${count}, ${percentage.toFixed(
-      1
-    )}%)`;
+    const label = `${SENTIMENT_LABELS[key]} (${count}, ${percentage.toFixed(1)}%)`;
 
     return { key, count, percentage, color, label };
   });
 
-  // Вычисляем CSS для conic-gradient, чтобы сымитировать круговую диаграмму
   let gradientStops = [];
   let currentPercentage = 0;
 
@@ -110,14 +106,13 @@ const SentimentPieChart = ({ statistics }) => {
 
 // ===============================================
 // ⭐️ Вложенный компонент для столбчатой диаграммы источников (SourcesBarChart)
-// Использует стили из index.module.css
 // ===============================================
 const SourcesBarChart = ({ content }) => {
   if (!content || content.length === 0) return null;
 
-  // 1. Сбор данных по источникам
+  // 1. Сбор данных по источникам - ИСПРАВЛЕНО: review.src
   const sourceCounts = content.reduce((acc, review) => {
-    acc[review.source] = (acc[review.source] || 0) + 1;
+    acc[review.src] = (acc[review.src] || 0) + 1; // ✅ src
     return acc;
   }, {});
 
@@ -244,17 +239,16 @@ function ReviewListPage({ data, fileId = "mock_file_id" }) {
       if (!displayData?.content) return;
 
       const sortedContent = [...displayData.content].sort((a, b) => {
-        let aValue = a[sortColumn === "src" ? "source" : sortColumn];
-        let bValue = b[sortColumn === "src" ? "source" : sortColumn];
+        // ✅ ИСПРАВЛЕНО: везде используем src вместо source
+        let aValue = a[sortColumn === "src" ? "src" : sortColumn];
+        let bValue = b[sortColumn === "src" ? "src" : sortColumn];
 
-        // Обработка сортировки для строковых значений
         if (sortColumn === "label" || sortColumn === "src") {
           return desc
             ? bValue.localeCompare(aValue)
             : aValue.localeCompare(bValue);
         }
 
-        // Для числовых значений (если бы они были)
         return desc ? bValue - aValue : aValue - bValue;
       });
 
@@ -274,9 +268,12 @@ function ReviewListPage({ data, fileId = "mock_file_id" }) {
     return <div className={styles.loading}>Загрузка данных...</div>;
   }
 
+  // ✅ ИСПРАВЛЕНО: используем review.src
   const uniqueSources = [
-    ...new Set(data.content?.map((review) => review.source) || []),
+    ...new Set(data.content?.map((review) => review.src) || []),
   ];
+
+  console.log('🔍 Unique sources:', uniqueSources); // Для отладки
 
   const sentiments = [
     { value: "0", label: "Нейтральный" },
@@ -298,7 +295,6 @@ function ReviewListPage({ data, fileId = "mock_file_id" }) {
         return <ReviewTable data={displayData} onSort={handleSort} />;
 
       case "diagrams":
-        // Рендеринг диаграмм
         return (
           <div className={styles.diagramsContainer}>
             <h1>📊 Визуализация данных</h1>
@@ -368,7 +364,6 @@ function ReviewListPage({ data, fileId = "mock_file_id" }) {
         />
         <img src="/search.svg" alt="Поиск" />
       </div>
-      {/* ✅ Секция с фильтром и кнопками сортировки */}
       <div className={styles.sortSection}>
         <FilterDropdown
           sentiments={sentiments}
@@ -419,7 +414,7 @@ function ReviewListPage({ data, fileId = "mock_file_id" }) {
         className={`${styles.backToTop} ${isVisible ? styles.visible : ""}`}
         aria-label="Вернуться наверх страницы"
       >
-        &#9650; {/* Символ стрелки вверх */}
+        &#9650;
       </button>
     </div>
   );

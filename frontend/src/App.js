@@ -21,11 +21,15 @@ function App() {
 
       {currentView === "list" && fileData && (
         <main>
-          <DownloadSection
-            fileId={fileData.file_id}
-            fileName="processed_reviews.csv"
-          />
-          <ReviewListPage data={fileData} />
+          <div className="left-panel">
+            <DownloadSection
+              fileId={fileData.file_id}
+              fileName="processed_reviews.csv"
+            />
+          </div>
+          <div className="right-panel">
+            <ReviewListPage data={fileData} fileId={fileData.file_id} />
+          </div>
         </main>
       )}
     </div>
