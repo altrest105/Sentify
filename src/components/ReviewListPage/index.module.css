@@ -2,13 +2,16 @@
   justify-content: center;
 }
 
-.right h1 {
-  margin-bottom: 5px;
-}
-
-.right h2 {
+.rightPanel h1 {
   margin-top: 5px;
   margin-bottom: 5px;
+  font-size: 23px;
+}
+
+.rightPanel h2 {
+  margin-top: 5px;
+  margin-bottom: 5px;
+  font-size: 16px;
 }
 
 .upload__button {
@@ -92,7 +95,9 @@ input {
   width: calc((100% - 80px) / 3);
   border-radius: 10px;
 }
-.loading, .error, .noResults {
+.loading,
+.error,
+.noResults {
   text-align: center;
   padding: 40px;
   margin: 20px 0;
@@ -183,4 +188,41 @@ input {
 
 .resetButton:hover {
   background: #4a3523;
+}
+
+.rightPanel {
+  border: 2px solid #f6f6f6;
+  border-radius: 10px;
+  padding: 10px;
+}
+
+.backToTop {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  background-color: #5b422c;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 45px;
+  height: 45px;
+  font-size: 20px;
+  cursor: pointer;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.backToTop:hover {
+  background-color: #4a3523;
+}
+
+.visible {
+  opacity: 1;
+  visibility: visible;
 }

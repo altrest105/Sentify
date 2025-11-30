@@ -1,15 +1,30 @@
 .fileLabel {
-  margin-top: 15px;
   padding: 10px;
   background-color: #efe3d2;
   border-radius: 50px;
   border: none;
   cursor: pointer;
-  font-size: 23px;
+  font-size: 16px;
+  margin-bottom: 15px;
+  min-width: 250px;
 }
 
 .left {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
+  padding-top: 60px;
+  height: 100%;
+  border: 2px solid transparent;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.fileInput {
+  display: none;
+}
+
+.dragging {
+  border: 2px dashed #5b422c;
+  background-color: #e0d2c3;
 }
