@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import styles from "./index.module.css";
 import ReviewCard from "../ReviewCard";
-import ReviewsTable from "../ReviewsTable";
+import ReviewTable from "../ReviewTable";
 import NavigationBar from "../Navigation/index.jsx";
 import FilterDropdown from "../FilterDropdown/index.jsx";
 import { apiService } from "../../services/api-simple";
@@ -125,7 +125,7 @@ function ReviewListPage({ data, fileId = "mock_file_id" }) {
 
     switch (activeView) {
       case "table":
-        return <ReviewsTable data={displayData} />;
+        return <ReviewTable data={displayData} />;
 
       case "diagrams":
         return <div className={styles.placeholder}>Диаграммы в разработке</div>;

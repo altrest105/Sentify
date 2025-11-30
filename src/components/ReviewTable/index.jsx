@@ -1,7 +1,7 @@
 import React from 'react';
 import styles from './index.module.css';
 
-function ReviewsTable({ data }) {
+function ReviewTable({ data }) {
   if (!data?.content || data.content.length === 0) {
     return (
       <div className={styles.noData}>
@@ -58,4 +58,4 @@ function ReviewsTable({ data }) {
   );
 }
 
-export default ReviewsTable;
+export default ReviewTable;
