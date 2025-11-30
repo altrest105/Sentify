@@ -65,7 +65,7 @@ async def upload_file(
 
     file_info[file_id] = [new_file_path, new_submission_file_path]
 
-    return {"file_id": file_id, "statistic": await collect_statistics(new_file_path), "content": await parse_csv(new_file_path)}
+    return {"file_id": file_id, "statistic": await collect_statistics(new_file_path), "content": (await parse_csv(new_file_path))[:50]}
 
 
 @app.post("/upload_submission_file")
@@ -140,21 +140,22 @@ async def download_submission_file(file_id: str):
 
 
 @app.get("/filter_file/{file_id}")
-async def filter_func(file_id: str, mood: List[int] = Query(...), sources: List[str] = Query(...)):
+async def filter_func(file_id: str, mood: List[str] = Query(...), sources: List[str] = Query(...)):
     file_path = file_info.get(file_id)
     if not file_path or not os.path.exists(file_path[0]):
         raise HTTPException(
             status_code=404,
             detail="File doesn't exists"
         )
+    print(len(set(mood) & {'1', '2', '0'}) != len(mood) or (len(mood) + len(sources)) < 1)
 
-    if set(mood) & {'1', '2', '3'} != len(mood) or len(mood) + len(sources) < 1:
+    if len(set(mood) & {'1', '2', '0'}) != len(mood) or (len(mood) + len(sources)) < 1:
         raise HTTPException(
             status_code=400,
             detail="Not enough parameters or not existing mood type"
         )
 
-    return await filter_file(file_path[0], mood, sources)
+    return (await filter_file(file_path[0], mood, sources))[:50]
 
 
 @app.delete("/delete_file/{file_id}", status_code=status.HTTP_204_NO_CONTENT)
@@ -188,7 +189,7 @@ async def sort_func(file_id: str, sort_column: str, desc: bool=False):
             detail="Wrong column to filter."
         )
 
-    return await sort_file(file_path[0], sort_column, desc)
+    return (await sort_file(file_path[0], sort_column, desc))[:50]
 
 
 @app.get("/count_metric")
