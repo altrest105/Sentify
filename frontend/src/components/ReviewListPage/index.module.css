@@ -1,0 +1,357 @@
+.left {
+  justify-content: center;
+}
+
+.rightPanel h1 {
+  margin-top: 5px;
+  margin-bottom: 5px;
+  font-size: 23px;
+}
+
+.rightPanel h2 {
+  margin-top: 5px;
+  margin-bottom: 5px;
+  font-size: 16px;
+}
+
+.upload__button {
+  margin-top: 15px;
+  padding: 10px;
+  background-color: #efe3d2;
+  border-radius: 50px;
+  font-size: 23px;
+}
+
+.right {
+  justify-content: flex-start;
+}
+
+.button {
+  padding: 10px;
+  border: none;
+  cursor: pointer;
+  border-radius: 50px;
+}
+
+.nav {
+  display: flex;
+  justify-content: space-around;
+  background-color: #f6f1ea;
+  border-radius: 50px;
+  border: none;
+  padding: 10px;
+}
+
+.nav__button {
+  /* АКТИВНАЯ КНОПКА НАВИГАЦИИ*/
+  background-color: #efe3d2;
+  font-size: 16px;
+  padding: 5px 70px 5px 70px;
+}
+
+.search {
+  display: flex;
+  justify-content: space-between;
+  background-color: #f6f1ea;
+  padding: 5px 10px;
+  border-radius: 10px;
+  margin-top: 10px;
+}
+
+.filter {
+  display: flex;
+  align-self: flex-end;
+  justify-content: space-between;
+  width: 20%;
+  background-color: #f6f1ea;
+  padding: 5px 10px;
+  border-radius: 10px;
+  margin-top: 10px;
+  font-size: 16px;
+}
+
+.open {
+  width: 20px;
+}
+
+input {
+  border: none;
+  background-color: #f6f1ea;
+  font-size: 16px;
+  padding: 5px 0;
+}
+
+.responses {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  overflow: auto;
+  margin-top: 20px;
+}
+
+.response {
+  background-color: #f6f1ea;
+  height: 150px;
+  width: calc((100% - 80px) / 3);
+  border-radius: 10px;
+}
+.loading,
+.error,
+.noResults {
+  text-align: center;
+  padding: 40px;
+  margin: 20px 0;
+  border-radius: 10px;
+}
+
+.loading {
+  background: #f9f5f0;
+  color: #5b422c;
+}
+
+.error {
+  background: #ffe6e6;
+  color: #cc0000;
+}
+
+.noResults {
+  background: #f0f0f0;
+  color: #666;
+}
+
+.stats {
+  font-size: 14px;
+  color: #666;
+  margin-top: 5px;
+}
+
+.sortButtons {
+  display: flex;
+  gap: 10px;
+  margin: 15px 0;
+}
+
+.sortButtons button {
+  padding: 8px 16px;
+  border: 1px solid #ddd;
+  background: #f5f5f5;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.sortButtons button:hover {
+  background: #e0e0e0;
+}
+
+.searchInfo {
+  font-size: 14px;
+  color: #666;
+  font-style: italic;
+  margin-top: 5px;
+}
+
+.noData {
+  text-align: center;
+  padding: 60px 20px;
+  background: #f9f9f9;
+  border-radius: 12px;
+  margin: 20px 0;
+}
+
+.noDataIcon {
+  font-size: 64px;
+  margin-bottom: 20px;
+}
+
+.noData h3 {
+  color: #5b422c;
+  margin-bottom: 10px;
+  font-size: 20px;
+}
+
+.noData p {
+  color: #666;
+  margin-bottom: 20px;
+  font-size: 16px;
+}
+
+.resetButton {
+  background: #5b422c;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.3s ease;
+}
+
+.resetButton:hover {
+  background: #4a3523;
+}
+
+.rightPanel {
+  border: 2px solid #f6f6f6;
+  border-radius: 10px;
+  padding: 10px;
+}
+
+.backToTop {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  background-color: #5b422c;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 45px;
+  height: 45px;
+  font-size: 20px;
+  cursor: pointer;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.backToTop:hover {
+  background-color: #4a3523;
+}
+
+.visible {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* ================================================= */
+/* Стили для секции Диаграмм (activeView: 'diagrams') */
+/* ================================================= */
+
+.diagramsContainer {
+  padding: 20px 0;
+}
+
+.chartsWrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 40px;
+  justify-content: space-around;
+}
+
+.chartContainer {
+  /* Чтобы каждая диаграмма занимала минимум 400px, но могли переноситься */
+  min-width: 400px;
+  flex: 1;
+  padding: 20px;
+  border-radius: 8px;
+  background-color: #ffffff; /* Светлый фон для контраста */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* --- Круговая диаграмма (SentimentPieChart) --- */
+
+.pieChartPlaceholder {
+  width: 250px;
+  height: 250px;
+  border-radius: 50%;
+  margin: 20px auto;
+  position: relative;
+  /* Градиент будет применен инлайн из JSX */
+  border: 1px solid #ccc;
+}
+
+.centerText {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  font-weight: bold;
+  font-size: 1.2em;
+  background-color: #fff;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1.2;
+  box-shadow: 0 0 0 5px #fff;
+}
+
+.legend {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.legendItem {
+  display: inline-flex;
+  align-items: center;
+  margin: 0 10px;
+  font-size: 0.9em;
+}
+
+.colorBox {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  margin-right: 5px;
+  border-radius: 3px;
+}
+
+.noDataChart {
+  color: #888;
+  text-align: center;
+  padding: 40px;
+}
+
+/* --- Столбчатая диаграмма (SourcesBarChart) --- */
+
+.barChart {
+  margin-top: 20px;
+  padding: 10px;
+}
+
+.barItem {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+  gap: 15px;
+}
+
+.barLabel {
+  width: 120px; /* Фиксированная ширина для меток */
+  font-weight: 500;
+  text-align: right;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.9em;
+}
+
+.barWrapper {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  background-color: #f0f0f0;
+  border-radius: 4px;
+}
+
+.bar {
+  height: 20px;
+  background-color: rgba(74, 255, 0, 0.15);
+  border-radius: 4px 0 0 4px;
+  transition: width 0.5s ease-out;
+}
+
+.barCount {
+  margin-left: 10px;
+  font-weight: bold;
+  color: #333;
+  padding-right: 8px;
+}
+
