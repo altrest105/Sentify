@@ -1,0 +1,44 @@
+.nav {
+  display: flex;
+  justify-content: space-around;
+  background-color: #f6f1ea;
+  border-radius: 50px;
+  border: none;
+  padding: 10px;
+}
+
+.navRelative {
+  position: relative;
+}
+
+.underline {
+  position: absolute;
+  top: 10px;
+  bottom: 10px;
+  transition: left 0.3s ease, width 0.3s ease;
+  z-index: 0;
+  overflow: hidden;
+  border-radius: 50px;
+}
+
+.underlineBackground {
+  height: 100%;
+  width: 100%;
+  background-color: #efe3d2;
+  display: block;
+  border-radius: 50px;
+}
+.button {
+  padding: 10px;
+  border: none;
+  cursor: pointer;
+  border-radius: 50px;
+}
+
+.navButton {
+  background-color: transparent;
+  position: relative;
+  z-index: 1;
+  font-size: 16px;
+  padding: 5px 50px;
+}
