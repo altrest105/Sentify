@@ -1,18 +1,24 @@
-// src/services/api-simple.js
 import { mockApiService } from './mockApi';
 
-// ✅ Простой объект вместо класса
 export const apiService = {
   async uploadFile(file) {
     console.log('🔄 UPLOAD FILE CALLED');
-    
-    // Всегда используем моки для тестирования
     return await mockApiService.uploadFile(file);
   },
 
   async downloadFile(file_id) {
     console.log('📥 DOWNLOAD FILE CALLED');
     return await mockApiService.downloadFile(file_id);
+  },
+
+  async filteredReviews(filters, fileId) {
+    console.log('🎛️ FILTERED REVIEWS CALLED', filters, fileId);
+    return await mockApiService.filteredReviews(filters, fileId);
+  },
+
+  async searchReviews(query, fileId) {
+    console.log('🔍 SEARCH REVIEWS CALLED', query, fileId);
+    return await mockApiService.searchReviews(query, fileId);
   },
 
   triggerDownload(blob, fileName = 'file.csv') {

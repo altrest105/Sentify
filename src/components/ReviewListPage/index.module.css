@@ -92,3 +92,95 @@ input {
   width: calc((100% - 80px) / 3);
   border-radius: 10px;
 }
+.loading, .error, .noResults {
+  text-align: center;
+  padding: 40px;
+  margin: 20px 0;
+  border-radius: 10px;
+}
+
+.loading {
+  background: #f9f5f0;
+  color: #5b422c;
+}
+
+.error {
+  background: #ffe6e6;
+  color: #cc0000;
+}
+
+.noResults {
+  background: #f0f0f0;
+  color: #666;
+}
+
+.stats {
+  font-size: 14px;
+  color: #666;
+  margin-top: 5px;
+}
+
+.sortButtons {
+  display: flex;
+  gap: 10px;
+  margin: 15px 0;
+}
+
+.sortButtons button {
+  padding: 8px 16px;
+  border: 1px solid #ddd;
+  background: #f5f5f5;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.sortButtons button:hover {
+  background: #e0e0e0;
+}
+
+.searchInfo {
+  font-size: 14px;
+  color: #666;
+  font-style: italic;
+  margin-top: 5px;
+}
+
+.noData {
+  text-align: center;
+  padding: 60px 20px;
+  background: #f9f9f9;
+  border-radius: 12px;
+  margin: 20px 0;
+}
+
+.noDataIcon {
+  font-size: 64px;
+  margin-bottom: 20px;
+}
+
+.noData h3 {
+  color: #5b422c;
+  margin-bottom: 10px;
+  font-size: 20px;
+}
+
+.noData p {
+  color: #666;
+  margin-bottom: 20px;
+  font-size: 16px;
+}
+
+.resetButton {
+  background: #5b422c;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.3s ease;
+}
+
+.resetButton:hover {
+  background: #4a3523;
+}

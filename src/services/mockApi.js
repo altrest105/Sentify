@@ -1,167 +1,160 @@
-// src/services/mockApi.js
+// БОЛЬШИЕ МОК ДАННЫЕ ДЛЯ СКРОЛЛА
+const generateMockReviews = () => {
+  const sources = ['Amazon', 'Ozon', 'Wildberries', 'Yandex Market', 'AliExpress'];
+  
+  const sentiments = [
+    { value: "0", label: "Нейтральный" },
+    { value: "1", label: "Положительный" }, 
+    { value: "2", label: "Негативный" }
+  ];
+  
+  const reviews = [];
+  
+  for (let i = 1; i <= 50; i++) {
+    const sentiment = sentiments[i % 3];
+    const source = sources[i % 5];
+    
+    reviews.push({
+      ID: i.toString(),
+      text: generateReviewText(sentiment.label, source),
+      label: sentiment.value,
+      source: source
+    });
+  }
+  
+  return reviews;
+};
+
+const generateReviewText = (sentiment, source) => {
+  const positiveTexts = [
+    `Отличный товар с ${source}! Качество превзошло ожидания.`,
+    `Потрясающее качество на ${source}. Рекомендую всем!`,
+    `Прекрасный продукт с быстрой доставкой от ${source}.`,
+    `Восхищен покупкой на ${source}! Все идеально.`,
+    `Лучший товар на ${source} за последнее время.`
+  ];
+  
+  const neutralTexts = [
+    `Нормальный товар с ${source}. Ничего особенного.`,
+    `Стандартное качество на ${source}. Цена соответствует.`,
+    `Обычный продукт с ${source}. Без нареканий.`,
+    `Средний товар на ${source}. Подходит для базовых нужд.`,
+    `Ничего выдающегося на ${source}, но и плохого нет.`
+  ];
+  
+  const negativeTexts = [
+    `Ужасное качество с ${source}. Не рекомендую.`,
+    `Разочарован покупкой на ${source}. Деньги на ветер.`,
+    `Плохой товар с ${source}. Сломался сразу.`,
+    `Некачественный продукт на ${source}. Возврат.`,
+    `Ужасный сервис ${source}. Товар не соответствует.`
+  ];
+  
+  const texts = {
+    'Положительный': positiveTexts,
+    'Нейтральный': neutralTexts,
+    'Негативный': negativeTexts
+  };
+  
+  const availableTexts = texts[sentiment];
+  return availableTexts[Math.floor(Math.random() * availableTexts.length)];
+};
+
+// Кэш данных для быстрого доступа
+let cachedData = null;
+
 export const mockApiService = {
   async uploadFile(file) {
-    // Имитация загрузки на сервер
-    await new Promise(resolve => setTimeout(resolve, 1500));
+    // ✅ УБРАНА ЗАДЕРЖКА
+    if (!cachedData) {
+      const content = generateMockReviews();
+      const statistic = {
+        "0": content.filter(r => r.label === "0").length,
+        "1": content.filter(r => r.label === "1").length,
+        "2": content.filter(r => r.label === "2").length
+      };
+      
+      cachedData = {
+        file_id: `file_${Date.now()}`,
+        statistic,
+        content
+      };
+    }
     
-    return {
-      file_id: `file_${Date.now()}`,
-      statistic: {
-        "0": 6,   // негативные
-        "1": 7,   // нейтральные  
-        "2": 7    // позитивные
-      },
-      content: [
-        {
-          "ID": "1",
-          "text": "Отличный продукт! Быстрая доставка, качество на высоте. Рекомендую всем к покупке.",
-          "label": "2",
-          "source": "Amazon"
-        },
-        {
-          "ID": "2", 
-          "text": "Ужасное качество. Товар сломался через день использования. Не рекомендую.",
-          "label": "0",
-          "source": "Ozon"
-        },
-        {
-          "ID": "3",
-          "text": "Нормальный товар за свои деньги. Ничего особенного, но и нареканий нет.",
-          "label": "1", 
-          "source": "Wildberries"
-        },
-        {
-          "ID": "4",
-          "text": "Потрясающее качество! Превзошел все ожидания. Буду покупать еще.",
-          "label": "2",
-          "source": "Amazon"
-        },
-        {
-          "ID": "5",
-          "text": "Разочарован. Ожидал большего за эти деньги. Упаковка повреждена при доставке.",
-          "label": "0",
-          "source": "Ozon"
-        },
-        {
-          "ID": "6",
-          "text": "Качественный товар, соответствует описанию. Доставка быстрая, упаковка целая.",
-          "label": "2",
-          "source": "Amazon"
-        },
-        {
-          "ID": "7",
-          "text": "Среднего качества, за такую цену ожидал лучшего. Но в целом терпимо.",
-          "label": "1",
-          "source": "Wildberries"
-        },
-        {
-          "ID": "8",
-          "text": "Очень доволен покупкой! Отличное соотношение цены и качества. Советую!",
-          "label": "2",
-          "source": "Amazon"
-        },
-        {
-          "ID": "9",
-          "text": "Товар пришел с дефектом. Пришлось возвращать. Неприятный опыт.",
-          "label": "0",
-          "source": "Ozon"
-        },
-        {
-          "ID": "10",
-          "text": "Обычный товар, ничего особенного. Цена соответствует качеству.",
-          "label": "1",
-          "source": "Wildberries"
-        },
-        {
-          "ID": "11",
-          "text": "Восхищен качеством! Прекрасный дизайн и отличная функциональность.",
-          "label": "2",
-          "source": "Amazon"
-        },
-        {
-          "ID": "12",
-          "text": "Некачественный товар. Сломался через неделю использования. Деньги на ветер.",
-          "label": "0",
-          "source": "Ozon"
-        },
-        {
-          "ID": "13",
-          "text": "Стандартный продукт, работает как ожидалось. Ничего выдающегося.",
-          "label": "1",
-          "source": "Wildberries"
-        },
-        {
-          "ID": "14",
-          "text": "Лучшая покупка за последнее время! Превысил все мои ожидания!",
-          "label": "2",
-          "source": "Amazon"
-        },
-        {
-          "ID": "15",
-          "text": "Ужасный сервис и качество. Товар не соответствует описанию. Возврат.",
-          "label": "0",
-          "source": "Ozon"
-        },
-        {
-          "ID": "16",
-          "text": "Нормальный товар за свои деньги. Подходит для периодического использования.",
-          "label": "1",
-          "source": "Wildberries"
-        },
-        {
-          "ID": "17",
-          "text": "Идеальное качество! Быстрая доставка и отличная упаковка. Спасибо!",
-          "label": "2",
-          "source": "Amazon"
-        },
-        {
-          "ID": "18",
-          "text": "Катастрофически плохое качество. Детали отваливаются при первом использовании.",
-          "label": "0",
-          "source": "Ozon"
-        },
-        {
-          "ID": "19",
-          "text": "Средний товар, подходит для базовых нужд. Не стоит ожидать чудес.",
-          "label": "1",
-          "source": "Wildberries"
-        },
-        {
-          "ID": "20",
-          "text": "Превосходно! Отличный продукт, буду рекомендовать друзьям и знакомым!",
-          "label": "2",
-          "source": "Amazon"
-        }
-      ]
-    };
+    return cachedData;
   },
 
   async downloadFile(file_id) {
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    // Создаем mock CSV файл со всеми 20 отзывами
-    const csvData = `ID,text,label,source
-1,"Отличный продукт! Быстрая доставка, качество на высоте. Рекомендую всем к покупке.",2,Amazon
-2,"Ужасное качество. Товар сломался через день использования. Не рекомендую.",0,Ozon
-3,"Нормальный товар за свои деньги. Ничего особенного, но и нареканий нет.",1,Wildberries
-4,"Потрясающее качество! Превзошел все ожидания. Буду покупать еще.",2,Amazon
-5,"Разочарован. Ожидал большего за эти деньги. Упаковка повреждена при доставке.",0,Ozon
-6,"Качественный товар, соответствует описанию. Доставка быстрая, упаковка целая.",2,Amazon
-7,"Среднего качества, за такую цену ожидал лучшего. Но в целом терпимо.",1,Wildberries
-8,"Очень доволен покупкой! Отличное соотношение цены и качества. Советую!",2,Amazon
-9,"Товар пришел с дефектом. Пришлось возвращать. Неприятный опыт.",0,Ozon
-10,"Обычный товар, ничего особенного. Цена соответствует качеству.",1,Wildberries
-11,"Восхищен качеством! Прекрасный дизайн и отличная функциональность.",2,Amazon
-12,"Некачественный товар. Сломался через неделю использования. Деньги на ветер.",0,Ozon
-13,"Стандартный продукт, работает как ожидалось. Ничего выдающегося.",1,Wildberries
-14,"Лучшая покупка за последнее время! Превысил все мои ожидания!",2,Amazon
-15,"Ужасный сервис и качество. Товар не соответствует описанию. Возврат.",0,Ozon
-16,"Нормальный товар за свои деньги. Подходит для периодического использования.",1,Wildberries
-17,"Идеальное качество! Быстрая доставка и отличная упаковка. Спасибо!",2,Amazon
-18,"Катастрофически плохое качество. Детали отваливаются при первом использовании.",0,Ozon
-19,"Средний товар, подходит для базовых нужд. Не стоит ожидать чудес.",1,Wildberries
-20,"Превосходно! Отличный продукт, буду рекомендовать друзьям и знакомым!",2,Amazon`;
-
+    // ✅ УБРАНА ЗАДЕРЖКА
+    const csvData = "ID,text,label,source\n1,Test,1,Amazon";
     return new Blob([csvData], { type: 'text/csv;charset=utf-8' });
+  },
+
+  // ✅ ФИЛЬТРАЦИЯ БЕЗ ЗАДЕРЖКИ
+  async filteredReviews(filters, fileId) {
+    console.log('🎛️ Applying real filters:', filters);
+    
+    const uploadResult = await this.uploadFile();
+    let filteredContent = [...uploadResult.content];
+    
+    if (filters.sentiments && filters.sentiments.length > 0) {
+      filteredContent = filteredContent.filter(review => 
+        filters.sentiments.includes(review.label)
+      );
+    }
+    
+    if (filters.sources && filters.sources.length > 0) {
+      filteredContent = filteredContent.filter(review => 
+        filters.sources.includes(review.source)
+      );
+    }
+    
+    console.log(`🎛️ Filter result: ${filteredContent.length} reviews`);
+    
+    return {
+      content: filteredContent,
+      statistic: {
+        "0": filteredContent.filter(r => r.label === "0").length,
+        "1": filteredContent.filter(r => r.label === "1").length,
+        "2": filteredContent.filter(r => r.label === "2").length
+      }
+    };
+  },
+
+  // ✅ СОРТИРОВКА БЕЗ ЗАДЕРЖКИ
+  async sortedReviews(sortColumn, fileId, desc = false) {
+    console.log('🔽 Applying real sort:', sortColumn, desc);
+    
+    const uploadResult = await this.uploadFile();
+    let sortedContent = [...uploadResult.content];
+    
+    sortedContent.sort((a, b) => {
+      let aValue = a[sortColumn === 'src' ? 'source' : sortColumn];
+      let bValue = b[sortColumn === 'src' ? 'source' : sortColumn];
+      
+      if (sortColumn === 'label') {
+        return desc ? bValue.localeCompare(aValue) : aValue.localeCompare(bValue);
+      } else {
+        return desc ? bValue.localeCompare(aValue) : aValue.localeCompare(bValue);
+      }
+    });
+    
+    return {
+      content: sortedContent
+    };
+  },
+
+  // ✅ ПОИСК БЕЗ ЗАДЕРЖКИ
+  async searchReviews(query, fileId) {
+    console.log('🔍 Applying real search:', query);
+    
+    const uploadResult = await this.uploadFile();
+    const searchedContent = uploadResult.content.filter(review =>
+      review.text.toLowerCase().includes(query.toLowerCase())
+    );
+    
+    return {
+      content: searchedContent
+    };
   }
 };
