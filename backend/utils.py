@@ -80,11 +80,7 @@ async def filter_file(file_path, mood, sources):
     print(mood, sources)
     with (open(file_path, 'r') as csvfile):
         dict_reader = csv.DictReader(csvfile)
-        s = 0
         for i in dict_reader:
-            s += 1
-            if s % 1000 == 0:
-                print(i['label'], i['src'])
             if (len(mood) == 0 or i['label'] in mood) and \
                (len(sources) == 0 or i['src'] in sources):
                     content.append(i)
