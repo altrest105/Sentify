@@ -24,7 +24,7 @@ const generateMockReviews = () => {
   
   return reviews;
 };
-
+ 
 const generateReviewText = (sentiment, source) => {
   const positiveTexts = [
     `Отличный товар с ${source}! Качество превзошло ожидания.`,

@@ -1,7 +1,7 @@
 import { mockApiService } from './mockApi';
 
 const API_BASE_URL = process.env.REACT_APP_API_URL;
-const USE_MOCK_API = true;
+const USE_MOCK_API = false;
 
 class ApiServices {
     constructor() {

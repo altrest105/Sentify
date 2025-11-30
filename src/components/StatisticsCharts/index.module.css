@@ -1,0 +1,248 @@
+.chartsContainer {
+  padding: 1.5rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  margin: 1rem 0;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.chartsRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.chartSection {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.chartSection h4 {
+  margin: 0 0 1.5rem 0;
+  color: #fff;
+  font-size: 1.1rem;
+  text-align: center;
+}
+
+/* Столбчатая диаграмма */
+.barChart {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 2rem;
+  height: 200px;
+  width: 100%;
+  padding: 0 1rem;
+}
+
+.barItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1;
+  max-width: 80px;
+}
+
+.barWrapper {
+  height: 150px;
+  width: 50px;
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+
+.bar {
+  width: 100%;
+  border-radius: 4px 4px 0 0;
+  transition: height 0.5s ease;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 20px;
+}
+
+.bar.positive {
+  background: rgba(74, 255, 0, 0.5);
+}
+
+.bar.neutral {
+  background: rgba(255, 198, 0, 0.5);
+}
+
+.bar.negative {
+  background: rgba(255, 0, 0, 0.5);
+}
+
+.barPercentage {
+  position: absolute;
+  top: -25px;
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: bold;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+  white-space: nowrap;
+}
+
+.barLabel {
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 500;
+  text-align: center;
+}
+
+.barCount {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.9rem;
+  font-weight: bold;
+}
+
+/* Круговая диаграмма */
+.pieChartContainer {
+  position: relative;
+  width: 200px;
+  height: 200px;
+}
+
+.pieChart {
+  transform: rotate(-90deg);
+}
+
+.pieSlice {
+  transition: stroke 0.3s ease;
+}
+
+.pieSlice.positive {
+  stroke: rgba(74, 255, 0, 0.5);
+}
+
+.pieSlice.neutral {
+  stroke: rgba(255, 198, 0, 0.5);
+}
+
+.pieSlice.negative {
+  stroke: rgba(255, 0, 0, 0.5);
+}
+
+.pieCenter {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  color: #fff;
+  background: rgba(0, 0, 0, 0.7);
+  border-radius: 50%;
+  width: 70px;
+  height: 70px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.totalCount {
+  display: block;
+  font-size: 1.2rem;
+  font-weight: bold;
+  line-height: 1;
+}
+
+.totalLabel {
+  display: block;
+  font-size: 0.7rem;
+  opacity: 0.9;
+  margin-top: 2px;
+}
+
+/* Легенда */
+.legend {
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  padding-top: 1.5rem;
+}
+
+.legend h4 {
+  margin: 0 0 1rem 0;
+  color: #fff;
+  font-size: 1.1rem;
+  text-align: center;
+}
+
+.legendItems {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.legendItem, .legendTotal {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.legendColor {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.legendColor.positive {
+  background-color: rgba(74, 255, 0, 0.5);
+}
+
+.legendColor.neutral {
+  background-color: rgba(255, 198, 0, 0.5);
+}
+
+.legendColor.negative {
+  background-color: rgba(255, 0, 0, 0.5);
+}
+
+.legendLabel {
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.legendValue {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.9rem;
+  font-weight: bold;
+  margin-left: 0.5rem;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+  .chartsRow {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .barChart {
+    height: 150px;
+    gap: 1rem;
+  }
+  
+  .barWrapper {
+    height: 120px;
+    width: 40px;
+  }
+  
+  .legendItems {
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: center;
+  }
+}

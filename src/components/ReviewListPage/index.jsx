@@ -4,7 +4,8 @@ import ReviewCard from "../ReviewCard";
 import ReviewTable from "../ReviewTable";
 import NavigationBar from "../Navigation/index.jsx";
 import FilterDropdown from "../FilterDropdown/index.jsx";
-import { apiService } from "../../services/api-simple";
+import StatisticsCharts from "../StatisticsCharts";
+import { apiService } from "../../services/api.js";
 import { useApi } from "../../hooks/useApi";
 
 const useDebounce = (value, delay) => {
@@ -128,8 +129,14 @@ function ReviewListPage({ data, fileId = "mock_file_id" }) {
         return <ReviewTable data={displayData} />;
 
       case "diagrams":
-        return <div className={styles.placeholder}>Диаграммы в разработке</div>;
-
+        return (
+          <div className={styles.diagramsView}>
+            <StatisticsCharts statistic={displayData.statistic} />
+            <div className={styles.chartsNote}>
+              * Диаграммы показывают распределение тональностей отзывов
+            </div>
+          </div>
+        );
       case "list":
       default:
         return (

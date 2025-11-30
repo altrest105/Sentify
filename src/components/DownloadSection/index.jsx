@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useApi } from "../../hooks/useApi";
-import { apiService } from "../../services/api-simple";
+import { apiService } from "../../services/api";
 import styles from "./index.module.css";
 
 function DownloadSection({ fileId, fileName }) {

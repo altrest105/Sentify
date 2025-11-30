@@ -1,5 +1,5 @@
 import { useApi } from "../../hooks/useApi";
-import { apiService } from "../../services/api-simple";
+import { apiService } from "../../services/api";
 import { useState } from "react";
 import styles from "./index.module.css";
 

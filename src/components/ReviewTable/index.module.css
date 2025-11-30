@@ -104,3 +104,15 @@ tr {
   color: #666;
   font-size: 16px;
 }
+
+.diagramsView {
+  padding: 1rem 0;
+}
+
+.chartsNote {
+  text-align: center;
+  margin-top: 1rem;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.9rem;
+  font-style: italic;
+}
