@@ -19,6 +19,7 @@ services:
       - ./frontend:/app
       - /app/node_modules
     environment:
+      - REACT_APP_API_URL=http://127.0.0.1:8000
       - CHOKIDAR_USEPOLLING=true
     container_name: frontend
     depends_on:
