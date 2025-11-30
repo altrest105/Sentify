@@ -87,16 +87,18 @@ async def upload_submission_file(
         with open(file_path, "wb") as buffer:
             content = await file.read()
             buffer.write(content)
-        headers = {"ID", "label"}
-        validated = await validate_headers(file_path, headers)
-        if not validated:
-            await delete_file_util(file_path)
-            raise HTTPException(
-                status_code=400,
-                detail="CSV file contains wrong headers"
-            )
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error loading file: {str(e)}")
+    headers = {"ID", "label"}
+    validated = await validate_headers(file_path, headers)
+
+    if not validated:
+        await delete_file_util(file_path)
+        raise HTTPException(
+            status_code=400,
+            detail="CSV file contains wrong headers"
+        )
+
 
     file_info[file_id] = [file_path]
 
@@ -155,7 +157,7 @@ async def filter_func(file_id: str, mood: List[str] = Query(...), sources: List[
             detail="Not enough parameters or not existing mood type"
         )
 
-    return (await filter_file(file_path[0], mood, sources))[:50]
+    return {"content": (await filter_file(file_path[0], mood, sources))[:50]}
 
 
 @app.delete("/delete_file/{file_id}", status_code=status.HTTP_204_NO_CONTENT)
