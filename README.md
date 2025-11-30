@@ -37,7 +37,7 @@
 
 | Главная страница | Таблица данных | Аналитика |
 |:---:|:---:|:---:|
-| ![Основная страница](path/to/main_page.png) | ![Таблица](path/to/table_page.png) | ![Диаграммы](path/to/charts_page.png) |
+| ![Основная страница](./rm_images/main.jpg) | ![Таблица](./rm_images/table.jpg) | ![Диаграммы](./rm_images/diagramm.jpg) |
 
 # Pipeline системы
 
@@ -75,3 +75,5 @@ cd botclub
 ```bash
 docker-compose up -d
 ```
+
+Приложение будет работать на http://localhost:3000
