@@ -26,6 +26,8 @@ function ReviewListPage({ data, fileId = "mock_file_id" }) {
   const [searchQuery, setSearchQuery] = useState("");
   const { loading, error, callApi } = useApi();
 
+  const [isVisible, setIsVisible] = useState(false);
+
   const debouncedSearchQuery = useDebounce(searchQuery, 300);
 
   useEffect(() => {
@@ -42,7 +44,11 @@ function ReviewListPage({ data, fileId = "mock_file_id" }) {
 
     const performSearch = async () => {
       try {
-        const result = await callApi(apiService.searchReviews, debouncedSearchQuery, fileId);
+        const result = await callApi(
+          apiService.searchReviews,
+          debouncedSearchQuery,
+          fileId
+        );
         setDisplayData(result);
       } catch (error) {
         console.error("Search error:", error);
@@ -59,13 +65,15 @@ function ReviewListPage({ data, fileId = "mock_file_id" }) {
 
   const handleFilterChange = async (filters) => {
     console.log("🎛️ Выбранные фильтры:", filters);
-    
-    if ((!filters.sentiments || filters.sentiments.length === 0) && 
-        (!filters.sources || filters.sources.length === 0)) {
+
+    if (
+      (!filters.sentiments || filters.sentiments.length === 0) &&
+      (!filters.sources || filters.sources.length === 0)
+    ) {
       console.log("🎛️ Все фильтры сброшены - показываем пустой результат");
       setDisplayData({
         content: [],
-        statistic: { "0": 0, "1": 0, "2": 0 }
+        statistic: { 0: 0, 1: 0, 2: 0 },
       });
       return;
     }
@@ -78,25 +86,54 @@ function ReviewListPage({ data, fileId = "mock_file_id" }) {
     }
   };
 
-  const handleSort = useCallback((sortColumn, desc = false) => {
-    if (!displayData?.content) return;
-
-    const sortedContent = [...displayData.content].sort((a, b) => {
-      let aValue = a[sortColumn === 'src' ? 'source' : sortColumn];
-      let bValue = b[sortColumn === 'src' ? 'source' : sortColumn];
-      
-      if (sortColumn === 'label') {
-        return desc ? bValue.localeCompare(aValue) : aValue.localeCompare(bValue);
-      } else {
-        return desc ? bValue.localeCompare(aValue) : aValue.localeCompare(bValue);
-      }
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
     });
+  };
 
-    setDisplayData({
-      ...displayData,
-      content: sortedContent
-    });
-  }, [displayData]);
+  const handleScroll = () => {
+    if (window.scrollY > 300) {
+      setIsVisible(true);
+    } else {
+      setIsVisible(false);
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
+  const handleSort = useCallback(
+    (sortColumn, desc = false) => {
+      if (!displayData?.content) return;
+
+      const sortedContent = [...displayData.content].sort((a, b) => {
+        let aValue = a[sortColumn === "src" ? "source" : sortColumn];
+        let bValue = b[sortColumn === "src" ? "source" : sortColumn];
+
+        if (sortColumn === "label") {
+          return desc
+            ? bValue.localeCompare(aValue)
+            : aValue.localeCompare(bValue);
+        } else {
+          return desc
+            ? bValue.localeCompare(aValue)
+            : aValue.localeCompare(bValue);
+        }
+      });
+
+      setDisplayData({
+        ...displayData,
+        content: sortedContent,
+      });
+    },
+    [displayData]
+  );
 
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);
@@ -106,12 +143,14 @@ function ReviewListPage({ data, fileId = "mock_file_id" }) {
     return <div className={styles.loading}>Загрузка данных...</div>;
   }
 
-  const uniqueSources = [...new Set(data.content?.map(review => review.source) || [])];
-  
+  const uniqueSources = [
+    ...new Set(data.content?.map((review) => review.source) || []),
+  ];
+
   const sentiments = [
     { value: "0", label: "Нейтральный" },
-    { value: "1", label: "Положительный" }, 
-    { value: "2", label: "Негативный" }
+    { value: "1", label: "Положительный" },
+    { value: "2", label: "Негативный" },
   ];
 
   const renderContent = () => {
@@ -143,12 +182,11 @@ function ReviewListPage({ data, fileId = "mock_file_id" }) {
                 <div className={styles.noDataIcon}>📭</div>
                 <h3>Отзывы не найдены</h3>
                 <p>
-                  {searchQuery 
+                  {searchQuery
                     ? `По запросу "${searchQuery}" ничего не найдено`
-                    : 'Попробуйте изменить параметры фильтрации'
-                  }
+                    : "Попробуйте изменить параметры фильтрации"}
                 </p>
-                <button 
+                <button
                   className={styles.resetButton}
                   onClick={() => {
                     setSearchQuery("");
@@ -172,16 +210,14 @@ function ReviewListPage({ data, fileId = "mock_file_id" }) {
         <h2>Отзывов: {displayData.content?.length || 0}</h2>
         {displayData.statistic && (
           <div className={styles.stats}>
-            👍 {displayData.statistic["1"]} | 😐 {displayData.statistic["0"]} | 👎 {displayData.statistic["2"]}
+            👍 {displayData.statistic["1"]} | 😐 {displayData.statistic["0"]} |
+            👎 {displayData.statistic["2"]}
           </div>
         )}
         {searchQuery && (
-          <div className={styles.searchInfo}>
-            Поиск: "{searchQuery}"
-          </div>
+          <div className={styles.searchInfo}>Поиск: "{searchQuery}"</div>
         )}
       </div>
-
       <div className={styles.search}>
         <input
           type="text"
@@ -192,43 +228,42 @@ function ReviewListPage({ data, fileId = "mock_file_id" }) {
         />
         <img src="/search.svg" alt="Поиск" />
       </div>
-
       {/* ✅ Обновленная секция с кнопками */}
       <div className={styles.sortSection}>
-        <FilterDropdown 
-          sentiments={sentiments} 
-          sources={uniqueSources} 
-          onFilterChange={handleFilterChange} 
+        <FilterDropdown
+          sentiments={sentiments}
+          sources={uniqueSources}
+          onFilterChange={handleFilterChange}
         />
 
         <div className={styles.sortButtons}>
-          <button 
+          <button
             className={styles.sortButton}
-            onClick={() => handleSort('label')}
+            onClick={() => handleSort("label")}
           >
             По тональности ↑
           </button>
-          <button 
+          <button
             className={styles.sortButton}
-            onClick={() => handleSort('label', true)}
+            onClick={() => handleSort("label", true)}
           >
             По тональности ↓
           </button>
-          <button 
+          <button
             className={styles.sortButton}
-            onClick={() => handleSort('src')}
+            onClick={() => handleSort("src")}
           >
             По источнику ↑
           </button>
-          <button 
+          <button
             className={styles.sortButton}
-            onClick={() => handleSort('src', true)}
+            onClick={() => handleSort("src", true)}
           >
             По источнику ↓
           </button>
         </div>
 
-        <button 
+        <button
           className={styles.resetAllButton}
           onClick={() => {
             setSearchQuery("");
@@ -238,8 +273,15 @@ function ReviewListPage({ data, fileId = "mock_file_id" }) {
           Сбросить все
         </button>
       </div>
-
       {renderContent()}
+      <button
+        onClick={scrollToTop}
+        className={`${styles.backToTop} ${isVisible ? styles.visible : ""}`}
+        aria-label="Вернуться наверх страницы"
+      >
+        &#9650; {/* Символ стрелки вверх */}
+      </button>
+         {" "}
     </div>
   );
 }

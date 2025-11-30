@@ -5,10 +5,15 @@ import styles from "./index.module.css";
 
 function FileUpload({ onSuccess }) {
   const [file, setFile] = useState(null);
+  const [isDragging, setIsDragging] = useState(false); // 💡 Состояние для Drag & Drop
   const { loading, error, callApi, clearError } = useApi();
 
   const handleFileSelect = async (selectedFile) => {
-    if (!selectedFile?.name.endsWith(".csv")) {
+    if (!selectedFile) return;
+
+    if (!selectedFile.name.endsWith(".csv")) {
+      console.warn("Выбранный файл не является CSV.");
+      clearError();
       return;
     }
 
@@ -28,43 +33,70 @@ function FileUpload({ onSuccess }) {
     }
   };
 
-  return (
-    <div>
-      <div className={`panel`}>
-        <h1 className={`text-align__center`}>
-          Перетащите CSV файл или выберите файл для загрузки
-        </h1>
-        <h2 className={`semi-transparent text-align__center`}>
-          Вы можете загрузить:
-        </h2>
-        <ul>
-          <li className={`semi-transparent`}>
-            <b>Тестовый файл</b> с 2 столбцами: отзыв и источник. Система
-            вычислит тональность отзыва и визуализирует результаты в виде
-            списка, таблицы или диаграммы.
-          </li>
-          <li className={`semi-transparent`}>
-            <b>Валидационный файл</b> с 3 столбцами: отзыв, источник и
-            тональность. Система вычислит тональности, визуализирует результаты
-            в виде списка, таблицы или диаграммы, а также сравнит эти данные с
-            валидационными и выведет показатель метрики.
-          </li>
-        </ul>
+  // 💡 1. Обработчики Drag and Drop
+  const handleDragEnter = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    // Проверяем, что есть перетаскиваемые элементы, чтобы избежать срабатывания на дочерних элементах
+    if (e.dataTransfer.items && e.dataTransfer.items.length > 0) {
+      setIsDragging(true);
+    }
+  };
 
-        <div>
-          <input
-            type="file"
-            accept=".csv"
-            onChange={(e) => handleFileSelect(e.target.files[0])}
-            id="file-input"
-            className={styles.fileInput}
-          />
-          <label htmlFor="file-input" className={`${styles.fileLabel} `}>
-            Загрузить файл
-          </label>
-        </div>
+  const handleDragLeave = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    // Используем `e.currentTarget` (элемент, к которому привязан обработчик)
+    // и `e.target` (элемент, с которого ушел курсор) для корректного сброса
+    if (e.target === e.currentTarget) {
+      setIsDragging(false);
+    }
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    // При DragOver мы хотим, чтобы стиль сохранялся
+    setIsDragging(true);
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false); // Сброс стиля
+
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      handleFileSelect(e.dataTransfer.files[0]);
+      e.dataTransfer.clearData();
+    }
+  };
+
+  return (
+    <div
+      className={`panel ${styles.fileUploadContainer} ${
+        isDragging ? styles.dragging : ""
+      }`}
+      onDragEnter={handleDragEnter}
+      onDragLeave={handleDragLeave}
+      onDragOver={handleDragOver}
+      onDrop={handleDrop}
+    >
+      <h1 className={`text-align__center`}>
+        Перетащите <b>тестовый</b> CSV файл или выберите файл для загрузки
+      </h1>
+
+      <div>
+        <input
+          type="file"
+          accept=".csv"
+          onChange={(e) => handleFileSelect(e.target.files[0])}
+          id="file-input"
+          className={styles.fileInput}
+        />
+        <label htmlFor="file-input" className={styles.fileLabel}>
+          {loading ? "Загружаем..." : "Загрузить файл"}
+        </label>
       </div>
-      <div className={`panel`}></div>
     </div>
   );
 }
